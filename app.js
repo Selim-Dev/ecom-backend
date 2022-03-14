@@ -9,6 +9,7 @@ const path = require('path');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 const app = express();
+
 const morgan = require('morgan');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -24,7 +25,7 @@ app.use(helmet());
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
 }
-
+// router
 // rate limiting prevent the same ip from making too many requests to our api and if exceeds that maximum number of requrest block that request
 // limit request from same api
 const limiter = rateLimit({
