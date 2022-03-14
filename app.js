@@ -33,7 +33,6 @@ const limiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hr
     message: 'Too many requests from this ip, please try again in an hour!'
 });
-app.use('/api', limiter); // apply this rate limiter to all requests that start with /api
 
 // Body Parser ( reading data from body into req.body)
 app.use(express.json({ limit: '10kb' }));
