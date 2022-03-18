@@ -10,16 +10,16 @@ const ProductSchema = new mongoose.Schema({
     },
     album: [String],
 
-    category: {
-        type: mongoose.Schema.ObjectId,
-        ref: 'Category',
-        required: [true, 'Order Must Belong To a Seller']
-    },
-    subCategory: {
-        type: mongoose.Schema.ObjectId,
-        ref: 'SubCategory',
-        required: [true, 'Order Must Belong To a Seller']
-    },
+    // category: {
+    //     type: mongoose.Schema.ObjectId,
+    //     ref: 'Category',
+    //     required: [true, 'Order Must Belong To a Seller']
+    // },
+    // subCategory: {
+    //     type: mongoose.Schema.ObjectId,
+    //     ref: 'SubCategory',
+    //     required: [true, 'Order Must Belong To a Seller']
+    // },
     seller: {
         type: mongoose.Schema.ObjectId,
         ref: 'User',
