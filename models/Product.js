@@ -9,7 +9,6 @@ const ProductSchema = new mongoose.Schema({
         type: String
     },
     album: [String],
-
     category: {
         type: mongoose.Schema.ObjectId,
         ref: 'Category',
