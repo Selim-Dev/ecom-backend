@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-// const joi = require('joi');
+const joi = require('joi');
 const { promisify } = require('util');
 const User = require('../models/User');
 const catchAsync = require('../utils/catchAsync');
@@ -29,12 +29,28 @@ const createAndSendToken = (user, statusCode, res) => {
         }
     });
 };
-
+function authValidate(user) {
+    const schema = joi.object({
+        name: joi.string().alphanum().required(),
+        email: joi
+            .string()
+            .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
+        password: joi.string().min(3).required(),
+        passwordConfirm: joi.ref('password'),
+        role: joi.string().required(),
+        address: {
+            country: joi.string().required(),
+            city: joi.string().required(),
+            street: joi.string().required(),
+            zip: joi.number().integer()
+        }
+    });
+    return schema.validate(user);
+    // console.log(result);
+    // return result;
+}
 exports.signup = catchAsync(async (req, res, next) => {
-    // const { error } = authValidate(req.body);
-    // if (error) {
-    //     return res.send(error.details[0].message);
-    // }
+    authValidate(req.body);
     const {
         name,
         email,
@@ -133,24 +149,3 @@ exports.restrictTo = (...roles) => {
         next();
     };
 };
-
-// function authValidate(user) {
-//     const schema = {
-//         name: joi.string().alphanum().required(),
-//         email: joi
-//             .string()
-//             .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
-//         password: joi.string().min(3).required(),
-//         passwordConfirm: joi.ref('password'),
-//         role: joi.string().required(),
-//         address: {
-//             country: joi.string().required(),
-//             city: joi.string().required(),
-//             street: joi.string().required(),
-//             zip: joi.number().integer()
-//         }
-//     };
-//     const result = joi.validate(user, schema);
-//     console.log(result);
-//     return result;
-// }
