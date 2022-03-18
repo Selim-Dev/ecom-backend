@@ -18,7 +18,8 @@ const DB = process.env.DATABASE.replace(
 
 async function main() {
     await mongoose.connect(
-        DB, {
+        DB,
+        {
             useNewUrlParser: true,
             useCreateIndex: true,
             useFindAndModify: false,
@@ -39,7 +40,7 @@ const server = app.listen(port, () => {
 
 process.on('unhandledRejection', (err) => {
     console.log(err.name, err.message);
-    console.log('UNHANDELED REJECTION shutting down 🔥');
+    console.log('UNHANDELED REJECTION shutting down 🔥  ');
     server.close(() => {
         process.exit(1);
     });
