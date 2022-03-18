@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
@@ -9,8 +8,9 @@ const path = require('path');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 const app = express();
-
 const morgan = require('morgan');
+const userRouter = require('./routes/userRoutes');
+const sellerReviewRouter = require('./routes/sellerReviewRoutes');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
@@ -63,16 +63,15 @@ app.use(
 
 // Test Middleware
 app.use((req, res, next) => {
-    console.log(req.cookies);
     req.requestTime = new Date().toISOString();
     next();
 });
 
 /****************** 2) routes ******************************/
 
-// app.get('/api/v1/tours', getAllTours);
-// app.post('/api/v1/tours', createNewTour);
-
+//this api run for all request methods (get-post-delete-patch)
+app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', sellerReviewRouter);
 app.all('*', (req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server`, 400)); // 400 bad requrest
 });

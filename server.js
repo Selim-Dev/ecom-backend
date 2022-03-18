@@ -11,14 +11,15 @@ process.on('uncaughtException', (err) => {
 });
 
 const app = require('./app');
-const DB = process.env.DATABASE.replace(
-    '<PASSWORD>',
-    process.env.DATABASE_PASSWORD
-);
+// const DB = process.env.DATABASE.replace(
+//     '<PASSWORD>',
+//     process.env.DATABASE_PASSWORD
+// );
 
 async function main() {
     await mongoose.connect(
-        DB, {
+        'mongodb://localhost:27017/testEcommerce',
+        {
             useNewUrlParser: true,
             useCreateIndex: true,
             useFindAndModify: false,
