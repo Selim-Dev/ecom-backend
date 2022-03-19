@@ -9,6 +9,10 @@ const ProductSchema = new mongoose.Schema({
         type: String
     },
     album: [String],
+    description: {
+        type: String,
+        required: [true, 'Product Must have a Description']
+    },
 
     // category: {
     //     type: mongoose.Schema.ObjectId,
@@ -23,13 +27,16 @@ const ProductSchema = new mongoose.Schema({
     seller: {
         type: mongoose.Schema.ObjectId,
         ref: 'User',
-        required: [true, 'Order Must Belong To a Seller']
+        required: [true, 'Product Must Belong To a Seller']
     },
     price: {
-        sale_price: Number,
-        list_price: Number
+        salePrice: Number,
+        listPrice: Number
     },
-    sku: Number,
+    sku: {
+        type: Number,
+        unique: true
+    },
     stock: Number,
     ratingsAverage: {
         type: Number,
@@ -58,4 +65,6 @@ const ProductSchema = new mongoose.Schema({
     }
 });
 
-exports.Product = mongoose.model('Product', ProductSchema);
+const Product = mongoose.model('Product', ProductSchema);
+
+module.exports = Product;
