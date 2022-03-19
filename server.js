@@ -16,14 +16,15 @@ const DB = process.env.DATABASE.replace(
     process.env.DATABASE_PASSWORD
 );
 
+
 async function main() {
     await mongoose.connect(
         DB, {
-            useNewUrlParser: true,
-            useCreateIndex: true,
-            useFindAndModify: false,
-            useUnifiedTopology: true
-        },
+        useNewUrlParser: true,
+        useCreateIndex: true,
+        useFindAndModify: false,
+        useUnifiedTopology: true
+    },
         (err) => {
             if (err) process.exit(1);
             console.log('db connected successfully');
