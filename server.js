@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 
 const dotenv = require('dotenv');
+
 dotenv.config({ path: './config.env' });
 
 process.on('uncaughtException', (err) => {
@@ -11,12 +12,15 @@ process.on('uncaughtException', (err) => {
 });
 
 const app = require('./app');
-const DB = process.env.DATABASE_LOCAL;
+
+const DB = process.env.DATABASE.replace(
+    '<PASSWORD>',
+    process.env.DATABASE_PASSWORD
+);
 
 async function main() {
     await mongoose.connect(
-        DB,
-        {
+        DB, {
             useNewUrlParser: true,
             useCreateIndex: true,
             useFindAndModify: false,
