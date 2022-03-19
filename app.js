@@ -9,12 +9,16 @@ const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 
 const app = express();
+
 const morgan = require('morgan');
 const userRouter = require('./routes/userRoutes');
 const sellerReviewRouter = require('./routes/sellerReviewRoutes');
 const productRouter = require('./routes/productRoutes');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
+
+const category = require('./routes/categoryRautes'); ////////
+const subCategory = require('./routes/subCategoryRoute'); ////////
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
@@ -23,7 +27,7 @@ app.use(cors());
 
 //Set Security HTTP Headers
 app.use(helmet());
-//(Logging)  Use Morgan Middleware to give information about the request ( in development only)
+// (Logging)  Use Morgan Middleware to give information about the request ( in development only)
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
 }
@@ -31,7 +35,7 @@ if (process.env.NODE_ENV === 'development') {
 // rate limiting prevent the same ip from making too many requests to our api and if exceeds that maximum number of requrest block that request
 // limit request from same api
 const limiter = rateLimit({
-    max: 100, // 100 requrests depend on the application
+    max: 10000, // 100 requrests depend on the application
     windowMs: 60 * 60 * 1000, // 1 hr
     message: 'Too many requests from this ip, please try again in an hour!'
 });
@@ -70,6 +74,11 @@ app.use((req, res, next) => {
 });
 
 /****************** 2) routes ******************************/
+
+// app.get('/api/v1/tours', getAllTours);
+// app.post('/api/v1/tours', createNewTour);
+app.use('/api/v1/category', category);
+app.use('/api/v1/subCategory', subCategory);
 
 //this api run for all request methods (get-post-delete-patch)
 app.use('/api/v1/users', userRouter);
