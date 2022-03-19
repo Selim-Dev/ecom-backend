@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
@@ -12,11 +11,14 @@ const cookieParser = require('cookie-parser');
 const app = express();
 
 const morgan = require('morgan');
+const userRouter = require('./routes/userRoutes');
+const sellerReviewRouter = require('./routes/sellerReviewRoutes');
+const productRouter = require('./routes/productRoutes');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
-const category = require('./routes/categoryRautes') ////////
-const subCategory = require('./routes/subCategoryRoute') ////////
+const category = require('./routes/categoryRautes'); ////////
+const subCategory = require('./routes/subCategoryRoute'); ////////
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
@@ -67,7 +69,6 @@ app.use(
 
 // Test Middleware
 app.use((req, res, next) => {
-    console.log(req.cookies);
     req.requestTime = new Date().toISOString();
     next();
 });
@@ -76,10 +77,13 @@ app.use((req, res, next) => {
 
 // app.get('/api/v1/tours', getAllTours);
 // app.post('/api/v1/tours', createNewTour);
-app.use('/api/v1/category', category)
-app.use('/api/v1/subCategory', subCategory)
+app.use('/api/v1/category', category);
+app.use('/api/v1/subCategory', subCategory);
 
-
+//this api run for all request methods (get-post-delete-patch)
+app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', sellerReviewRouter);
+app.use('/api/v1/products', productRouter);
 app.all('*', (req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server`, 400)); // 400 bad requrest
 });

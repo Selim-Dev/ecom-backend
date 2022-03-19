@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 const mongoose = require('mongoose');
 const validator = require('validator');
-// const bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs');
 // const crypto = require('crypto');
 const userSchema = new mongoose.Schema({
     name: {
@@ -72,18 +72,14 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-// // these middleware only works on save() and create() not on findandupdate()  find(Set)
-// // So any password updating we need to use user.save() not findByIdAndUpdate()
-// userSchema.pre('save', async function (next) {
-//     // this middleware only workds on save(), create() not findAndUpdate()
-//     //only run this password i fthe password is modified
-//     if (!this.isModified('password')) return next();
-//     //we hash the password with cost of 12 (salt Round)
-//     this.password = await bcrypt.hash(this.password, 12);
-//     // delete password confirmation field
-//     this.passwordConfirm = undefined;
-//     next();
-// });
+// these middleware only works on save() and create() not on findandupdate()  find(Set)
+// So any password updating we need to use user.save() not findByIdAndUpdate()
+userSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) return next();
+    this.password = await bcrypt.hash(this.password, 12);
+    this.passwordConfirm = undefined;
+    next();
+});
 // userSchema.pre('save', async function (next) {
 //     // this middleware only workds on save(), create() not findAndUpdate()
 
@@ -102,22 +98,22 @@ const userSchema = new mongoose.Schema({
 //     this.find({ active: { $ne: false } }); // we say active:ne:false instead of active:true because if some users don't have the active part and they are active we wanna include them
 //     next();
 // });
-// userSchema.methods.correctPassword = async function (
-//     candidatePassword,
-//     userPassword
-// ) {
-//     return await bcrypt.compare(candidatePassword, userPassword);
-// };
-// userSchema.methods.changedPasswordAfter = function (jwtTimestamp) {
-//     if (this.passwordChangedAt) {
-//         const changedTimeStamp = parseInt(
-//             this.passwordChangedAt.getTime() / 1000,
-//             10
-//         );
-//         return jwtTimestamp < changedTimeStamp;
-//     }
-//     return false;
-// };
+userSchema.methods.correctPassword = async function (
+    candidatePassword,
+    userPassword
+) {
+    return await bcrypt.compare(candidatePassword, userPassword);
+};
+userSchema.methods.changedPasswordAfter = function (jwtTimestamp) {
+    if (this.passwordChangedAt) {
+        const changedTimeStamp = parseInt(
+            this.passwordChangedAt.getTime() / 1000,
+            10
+        );
+        return jwtTimestamp < changedTimeStamp;
+    }
+    return false;
+};
 // userSchema.methods.createPasswordResetToken = function () {
 //     const resetToken = crypto.randomBytes(32).toString('hex');
 //     // this token is what we will send to the user (it's like a reset password that user can use to create new real password)

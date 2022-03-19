@@ -11,20 +11,16 @@ process.on('uncaughtException', (err) => {
 });
 
 const app = require('./app');
-const DB = process.env.DATABASE.replace(
-    '<PASSWORD>',
-    process.env.DATABASE_PASSWORD
-);
-
+const DB = process.env.DATABASE_LOCAL;
 
 async function main() {
     await mongoose.connect(
         DB, {
-        useNewUrlParser: true,
-        useCreateIndex: true,
-        useFindAndModify: false,
-        useUnifiedTopology: true
-    },
+            useNewUrlParser: true,
+            useCreateIndex: true,
+            useFindAndModify: false,
+            useUnifiedTopology: true
+        },
         (err) => {
             if (err) process.exit(1);
             console.log('db connected successfully');

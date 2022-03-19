@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-// const Tour = require('./tourModel');
 const SellerReviewSchema = new mongoose.Schema(
     {
         review: {
@@ -33,9 +32,9 @@ const SellerReviewSchema = new mongoose.Schema(
         toObject: { virtuals: true }
     }
 );
-// // this compound index make the user and tour unique so the user can only make one unique review for the tour that's why we set the unique value to true
-// reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
-// reviewSchema.pre(/^find/, function (next) {
+// this compound index make the user and tour unique so the user can only make one unique review for the tour that's why we set the unique value to true
+// SellerReviewSchema.index({ user: 1 }, { unique: true });
+// SellerReviewSchema.pre(/^find/, function (next) {
 //     //^find > any query that has find (find, findOne,findOneAndUpdate....)
 //     /* This Refer to current Query */
 //     this.populate({
@@ -43,7 +42,7 @@ const SellerReviewSchema = new mongoose.Schema(
 //         select: 'name photo'
 //     });
 //     // populate({
-//     //     path: 'tour',
+//     //     path: 'seller',
 //     //     select: 'name'
 //     // });
 //     next();
