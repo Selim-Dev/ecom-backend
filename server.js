@@ -15,8 +15,7 @@ const DB = process.env.DATABASE_LOCAL;
 
 async function main() {
     await mongoose.connect(
-        DB,
-        {
+        DB, {
             useNewUrlParser: true,
             useCreateIndex: true,
             useFindAndModify: false,
