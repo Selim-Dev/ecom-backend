@@ -135,8 +135,9 @@ exports.protect = catchAsync(async (req, res, next) => {
     res.locals.user = currentUser;
     next();
 });
-exports.restrictTo = (...roles) => {
-    return (req, res, next) => {
+exports.restrictTo =
+    (...roles) =>
+    (req, res, next) => {
         // roles [ 'admin','seller','user']
         if (!roles.includes(req.user.role)) {
             return next(
@@ -148,4 +149,3 @@ exports.restrictTo = (...roles) => {
         }
         next();
     };
-};

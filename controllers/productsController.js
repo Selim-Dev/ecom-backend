@@ -34,6 +34,7 @@ const factory = require('./handlerFactory');
 //         next(error);
 //     }
 // };
+//
 exports.createProduct = factory.createOne(Product);
 exports.getAllProducts = factory.getAll(Product);
 exports.getProduct = factory.getOne(Product);

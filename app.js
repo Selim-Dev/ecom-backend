@@ -14,11 +14,12 @@ const morgan = require('morgan');
 const userRouter = require('./routes/userRoutes');
 const sellerReviewRouter = require('./routes/sellerReviewRoutes');
 const productRouter = require('./routes/productRoutes');
+const sizeRoutes = require('./routes/sizeRoutes');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
-const category = require('./routes/categoryRautes'); ////////
-const subCategory = require('./routes/subCategoryRoute'); ////////
+const categoryRoutes = require('./routes/categoryRoutes'); ////////
+const subCategoryRoute = require('./routes/subCategoryRoute'); ////////
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
@@ -77,8 +78,9 @@ app.use((req, res, next) => {
 
 // app.get('/api/v1/tours', getAllTours);
 // app.post('/api/v1/tours', createNewTour);
-app.use('/api/v1/category', category);
-app.use('/api/v1/subCategory', subCategory);
+app.use('/api/v1/category', categoryRoutes);
+app.use('/api/v1/subCategory', subCategoryRoute);
+app.use('/api/v1/size', sizeRoutes);
 
 //this api run for all request methods (get-post-delete-patch)
 app.use('/api/v1/users', userRouter);

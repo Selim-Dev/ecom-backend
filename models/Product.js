@@ -3,34 +3,39 @@ const mongoose = require('mongoose');
 const ProductSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true
+        required: [true, 'products must have a name']
+    },
+    description: {
+        type: String,
+        required: [true, 'products must have a description']
     },
     photo: {
         type: String
     },
     album: [String],
-    // category: {
-    //     type: mongoose.Schema.ObjectId,
-    //     ref: 'Category',
-    //     required: [true, 'Order Must Belong To a Seller']
-    // },
-    // subCategory: {
-    //     type: mongoose.Schema.ObjectId,
-    //     ref: 'SubCategory',
-    //     required: [true, 'Order Must Belong To a Seller']
-    // },
+    category: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Category',
+        required: [true, 'Product Must Belong To a Category']
+    },
+    subCategory: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'SubCategory',
+        required: [true, 'Product Must Belong To a Sub Category']
+    },
     seller: {
         type: mongoose.Schema.ObjectId,
         ref: 'User',
         required: [true, 'Product Must Belong To a Seller']
     },
-    price: {
-        salePrice: Number,
-        listPrice: Number
+    salePrice: Number,
+    listPrice: {
+        type: Number,
+        required: [true, 'product must have a price']
     },
     sku: {
         type: Number,
-        unique: true
+        unique: [true, 'product sku must be unique']
     },
     stock: Number,
     ratingsAverage: {
