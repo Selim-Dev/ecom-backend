@@ -13,6 +13,7 @@ const app = express();
 const morgan = require('morgan');
 const userRouter = require('./routes/userRoutes');
 const sellerReviewRouter = require('./routes/sellerReviewRoutes');
+const productReviewRouter = require('./routes/productReviewRoutes');
 const productRouter = require('./routes/productRoutes');
 const sizeRoutes = require('./routes/sizeRoutes');
 const AppError = require('./utils/appError');
@@ -84,7 +85,8 @@ app.use('/api/v1/size', sizeRoutes);
 
 //this api run for all request methods (get-post-delete-patch)
 app.use('/api/v1/users', userRouter);
-app.use('/api/v1/reviews', sellerReviewRouter);
+app.use('/api/v1/sellerReviews', sellerReviewRouter);
+app.use('/api/v1/productReviews', productReviewRouter);
 app.use('/api/v1/products', productRouter);
 app.all('*', (req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server`, 400)); // 400 bad requrest

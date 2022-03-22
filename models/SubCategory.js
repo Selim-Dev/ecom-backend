@@ -14,7 +14,8 @@ const subCategoriesSchema = new mongoose.Schema({
         type: [mongoose.Schema.ObjectId],
         ref: 'Varient',
         default: []
-    }
+    },
+    brands: [{ type: mongoose.Schema.ObjectId, ref: 'Brand', default: [] }]
 });
 
 const subCategories = mongoose.model('SubCategory', subCategoriesSchema);

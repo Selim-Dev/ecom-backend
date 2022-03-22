@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-// const Tour = require('./tourModel');
+const Product = require('./Product');
+
 const ProductReviewSchema = new mongoose.Schema(
     {
         review: {
@@ -66,36 +67,42 @@ ProductReviewSchema.statics.calcAverageRatings = async function (productId) {
         }
     ]);
     if (stats.length > 0) {
-        await Tour.findByIdAndUpdate(productId, {
+        await Product.findByIdAndUpdate(productId, {
             ratingsAverage: stats[0].avgRating,
             ratingsQuantitiy: stats[0].nRating
         });
     } else {
-        await Tour.findByIdAndUpdate(productId, {
+        await Product.findByIdAndUpdate(productId, {
             ratingsAverage: 4.5,
             ratingsQuantitiy: 0
         });
     }
 };
-// // we use post not pre because on pre save the current review is not in the collection yet.
-// // focus ( post does not have access to next)
-// ProductReviewSchema.post('save', async function () {
-//     //this point to the current document
-//     //construcctor is the model who created that document
-//     /* this.constructor refer to the current model */
-//     this.constructor.calcAverageRatings(this.tour);
-// });
-// /* We Want to use  calcAverageRatings on updating or deleting document*/
-// // the problem: this here refer to the current query, but we want to get access to the current review document
-// ProductReviewSchema.pre(/^findOneAnd/, async function (next) {
-//     // we save r (which is the current review document to the query so that we can pass it to the post middleware function (to get access to the document))
-//     this.r = await this.findOne();
-//     next();
-// });
-// ProductReviewSchema.post(/^findOneAnd/, async function () {
-//     // we couldn't perform the this.r = await this.findOne(); because at the post('find') the query has already been executed
-//     await this.r.constructor.calcAverageRatings(this.r.tour);
-// });
+
+// we use post not pre because on pre save the current review is not in the collection yet.
+// focus ( post does not have access to next)
+ProductReviewSchema.post('save', async function () {
+    //this point to the current document
+    //construcctor is the model who created that document
+    /* this.constructor refer to the current model */
+    this.constructor.calcAverageRatings(this.product);
+});
+/* We Want to use  calcAverageRatings on updating or deleting document*/
+// the problem: this here refer to the current query, but we want to get access to the current review document
+// findByIdAndUpdate/Delete is only short cut for findOneAndUpdate/Delete()
+ProductReviewSchema.pre(/^findOneAnd/, async function (next) {
+    // we save r (which is the current review document to the query so that we can pass it to the post middleware function (to get access to the document))
+
+    this.r = await this.findOne();
+    // this.findOne() : Get the document from the database, so it still didn't change the review in the database , so if we calcAverageRatings here it will do it for the non-updated data
+    next();
+});
+ProductReviewSchema.post(/^findOneAnd/, async function () {
+    // we couldn't perform the this.r = await this.findOne(); because at the post('find') the query has already been executed
+    await this.r.constructor.calcAverageRatings(this.r.product);
+});
+const ProductReview = mongoose.model('ProductReview', ProductReviewSchema);
+
 
 
 const ProductReview = mongoose.model('ProductReview', ProductReviewSchema);
