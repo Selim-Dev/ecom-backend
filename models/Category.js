@@ -9,11 +9,9 @@ const categorySchema = new mongoose.Schema({
     photo: {
         type: String
     },
+
     subCategories: [
-        {
-            type: mongoose.Schema.ObjectId,
-            ref: 'SubCategory'
-        }
+        { type: mongoose.Schema.ObjectId, ref: 'SubCategory', default: [] }
     ]
 });
 

@@ -8,9 +8,15 @@ const subCategoriesSchema = new mongoose.Schema({
     },
     photo: {
         type: String
+    },
+
+    variants: {
+        type: [mongoose.Schema.ObjectId],
+        ref: 'Varient',
+        default: []
     }
 });
 
-const subCategories = mongoose.model('subCategories', subCategoriesSchema);
+const subCategories = mongoose.model('SubCategory', subCategoriesSchema);
 
 module.exports = subCategories;

@@ -42,6 +42,17 @@ const userSchema = new mongoose.Schema({
         enum: ['admin', 'user', 'seller'],
         default: 'user'
     },
+    ratingsAverage: {
+        type: Number,
+        default: 4,
+        min: [1, 'Rating Must be Greater than or equal to 1'],
+        max: [5, 'Rating Must be Less than or equal to 5'],
+        set: (val) => Math.round(val * 10) / 10
+    },
+    ratingsQuantitiy: {
+        type: Number,
+        default: 0
+    },
     password: {
         type: String,
         required: [true, 'Please Provide Password!'],
