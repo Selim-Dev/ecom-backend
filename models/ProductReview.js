@@ -78,6 +78,7 @@ ProductReviewSchema.statics.calcAverageRatings = async function (productId) {
         });
     }
 };
+
 // we use post not pre because on pre save the current review is not in the collection yet.
 // focus ( post does not have access to next)
 ProductReviewSchema.post('save', async function () {
@@ -102,4 +103,7 @@ ProductReviewSchema.post(/^findOneAnd/, async function () {
 });
 const ProductReview = mongoose.model('ProductReview', ProductReviewSchema);
 
+
+
+const ProductReview = mongoose.model('ProductReview', ProductReviewSchema);
 module.exports = ProductReview;

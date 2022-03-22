@@ -20,3 +20,5 @@ exports.creatSubCategory = catchAsync(async (req, res, next) => {
 exports.getOne = factory.getOne(SubCategory);
 exports.editById = factory.updateOne(SubCategory);
 exports.deleteById = factory.deleteOne(SubCategory);
+
+
