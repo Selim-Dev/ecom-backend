@@ -96,6 +96,7 @@ ProductReviewSchema.statics.calcAverageRatings = async function (productId) {
 //     // we couldn't perform the this.r = await this.findOne(); because at the post('find') the query has already been executed
 //     await this.r.constructor.calcAverageRatings(this.r.tour);
 // });
-// const ProductReview = mongoose.model('ProductReview', ProductReviewSchema);
 
+
+const ProductReview = mongoose.model('ProductReview', ProductReviewSchema);
 module.exports = ProductReview;
