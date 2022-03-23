@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 // const SubCategory = require('./SubCategory');
 const OrderItemSchema = new mongoose.Schema({
+    test: { type: String },
     name: {
         type: String,
         required: true
