@@ -1,7 +1,7 @@
 const express = require('express');
 
 const router = express.Router({ mergeParams: true });
-const reviewController = require('../controllers/sellerReviewController');
+const reviewController = require('../controllers/productReviewController');
 const authController = require('../controllers/authenticationController');
 
 router.use(authController.protect);

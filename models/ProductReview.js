@@ -78,6 +78,7 @@ ProductReviewSchema.statics.calcAverageRatings = async function (productId) {
         });
     }
 };
+
 // we use post not pre because on pre save the current review is not in the collection yet.
 // focus ( post does not have access to next)
 ProductReviewSchema.post('save', async function () {
@@ -88,15 +89,18 @@ ProductReviewSchema.post('save', async function () {
 });
 /* We Want to use  calcAverageRatings on updating or deleting document*/
 // the problem: this here refer to the current query, but we want to get access to the current review document
+// findByIdAndUpdate/Delete is only short cut for findOneAndUpdate/Delete()
 ProductReviewSchema.pre(/^findOneAnd/, async function (next) {
     // we save r (which is the current review document to the query so that we can pass it to the post middleware function (to get access to the document))
+
     this.r = await this.findOne();
+    // this.findOne() : Get the document from the database, so it still didn't change the review in the database , so if we calcAverageRatings here it will do it for the non-updated data
     next();
 });
 ProductReviewSchema.post(/^findOneAnd/, async function () {
     // we couldn't perform the this.r = await this.findOne(); because at the post('find') the query has already been executed
-    await this.r.constructor.calcAverageRatings(this.r.tour);
+    await this.r.constructor.calcAverageRatings(this.r.product);
 });
-const ProductReview = mongoose.model('ProductReview', ProductReviewSchema);
 
+const ProductReview = mongoose.model('ProductReview', ProductReviewSchema);
 module.exports = ProductReview;

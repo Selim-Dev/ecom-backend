@@ -6,9 +6,11 @@ const variantSchema = new mongoose.Schema({
         required: [true, 'category name must be unique'],
         unique: [true, 'category name must be unique']
     },
-    options: [String]
+    options: [
+        { type: mongoose.Schema.ObjectId, ref: 'SubCategory', default: [] }
+    ]
 });
 
-const subCategories = mongoose.model('subCategories', variantSchema);
+const Variant = mongoose.model('Variant', variantSchema);
 
-module.exports = subCategories;
+module.exports = Variant;

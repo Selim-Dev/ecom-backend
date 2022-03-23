@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const Seller = require('./User');
+
 const SellerReviewSchema = new mongoose.Schema(
     {
         review: {
@@ -47,52 +49,56 @@ const SellerReviewSchema = new mongoose.Schema(
 //     // });
 //     next();
 // });
-// reviewSchema.statics.calcAverageRatings = async function (tourId) {
-//     // tour is the tour id to whcih this review is related to
-//     // this here refer to the current model , and aggregate method works on the model Tour.aggregate> that's why we used static method on the model
-//     const stats = await this.aggregate([
-//         {
-//             $match: { tour: tourId }
-//         },
-//         {
-//             $group: {
-//                 _id: '$tour',
-//                 nRating: { $sum: 1 },
-//                 avgRating: { $avg: '$rating' }
-//             }
-//         }
-//     ]);
-//     if (stats.length > 0) {
-//         await Tour.findByIdAndUpdate(tourId, {
-//             ratingsAverage: stats[0].avgRating,
-//             ratingsQuantitiy: stats[0].nRating
-//         });
-//     } else {
-//         await Tour.findByIdAndUpdate(tourId, {
-//             ratingsAverage: 4.5,
-//             ratingsQuantitiy: 0
-//         });
-//     }
-// };
-// // we use post not pre because on presave the current review is not in the collection yet.
-// // focus ( post does not have access to next)
-// reviewSchema.post('save', async function () {
-//     //this point to the current document
-//     //construcctor is the model who created that document
-//     /* this.constructor refer to the current model */
-//     this.constructor.calcAverageRatings(this.tour);
-// });
-// /* We Want to use  calcAverageRatings on updating or deleting document*/
-// // the problem: this here refer to the current query, but we want to get access to the current review document
-// reviewSchema.pre(/^findOneAnd/, async function (next) {
-//     // we save r (which is the current review document to the query so that we can pass it to the post middleware function (to get access to the document))
-//     this.r = await this.findOne();
-//     next();
-// });
-// reviewSchema.post(/^findOneAnd/, async function () {
-//     // we couldn't perform the this.r = await this.findOne(); because at the post('find') the query has already been executed
-//     await this.r.constructor.calcAverageRatings(this.r.tour);
-// });
+// we use statics (method) because this refer to the model it self and we only ca call aggregate on the model it self not an instance of it (in case of .methods.methodName)
+SellerReviewSchema.statics.calcAverageRatings = async function (sellerId) {
+    // tour is the tour id to whcih this review is related to
+    // this here refer to the current model , and aggregate method works on the model Tour.aggregate> that's why we used static method on the model
+    const stats = await this.aggregate([
+        {
+            $match: { seller: sellerId }
+        },
+        {
+            $group: {
+                _id: '$seller',
+                nRating: { $sum: 1 },
+                avgRating: { $avg: '$rating' }
+            }
+        }
+    ]);
+    if (stats.length > 0) {
+        await Seller.findByIdAndUpdate(sellerId, {
+            ratingsAverage: stats[0].avgRating,
+            ratingsQuantitiy: stats[0].nRating
+        });
+    } else {
+        await Seller.findByIdAndUpdate(sellerId, {
+            ratingsAverage: 4.5,
+            ratingsQuantitiy: 0
+        });
+    }
+};
+// we use post not pre because on pre save the current review is not in the collection yet.
+// focus ( post does not have access to next)
+SellerReviewSchema.post('save', async function () {
+    //this point to the current document
+    //construcctor is the model who created that document
+    /* this.constructor refer to the current model */
+    this.constructor.calcAverageRatings(this.seller);
+});
+/* We Want to use  calcAverageRatings on updating or deleting document*/
+// the problem: this here refer to the current query, but we want to get access to the current review document
+// findByIdAndUpdate/Delete is only short cut for findOneAndUpdate/Delete()
+SellerReviewSchema.pre(/^findOneAnd/, async function (next) {
+    // we save r (which is the current review document to the query so that we can pass it to the post middleware function (to get access to the document))
+
+    this.r = await this.findOne();
+    // this.findOne() : Get the document from the database, so it still didn't change the review in the database , so if we calcAverageRatings here it will do it for the non-updated data
+    next();
+});
+SellerReviewSchema.post(/^findOneAnd/, async function () {
+    // we couldn't perform the this.r = await this.findOne(); because at the post('find') the query has already been executed
+    await this.r.constructor.calcAverageRatings(this.r.seller);
+});
 const SellerReview = mongoose.model('SellerReview', SellerReviewSchema);
 
 module.exports = SellerReview;
