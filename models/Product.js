@@ -3,33 +3,40 @@ const mongoose = require('mongoose');
 const ProductSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true
+        required: [true, 'products must have a name']
+    },
+    description: {
+        type: String,
+        required: [true, 'products must have a description']
     },
     photo: {
         type: String
     },
     album: [String],
-
     category: {
         type: mongoose.Schema.ObjectId,
         ref: 'Category',
-        required: [true, 'Order Must Belong To a Seller']
+        required: [true, 'Product Must Belong To a Category']
     },
     subCategory: {
         type: mongoose.Schema.ObjectId,
         ref: 'SubCategory',
-        required: [true, 'Order Must Belong To a Seller']
+        required: [true, 'Product Must Belong To a Sub Category']
     },
     seller: {
         type: mongoose.Schema.ObjectId,
         ref: 'User',
-        required: [true, 'Order Must Belong To a Seller']
+        required: [true, 'Product Must Belong To a Seller']
     },
-    price: {
-        sale_price: Number,
-        list_price: Number
+    salePrice: Number,
+    listPrice: {
+        type: Number,
+        required: [true, 'product must have a price']
     },
-    sku: Number,
+    sku: {
+        type: String
+        // unique: [true, 'product sku must be unique']
+    },
     stock: Number,
     ratingsAverage: {
         type: Number,
@@ -41,6 +48,12 @@ const ProductSchema = new mongoose.Schema({
     ratingsQuantitiy: {
         type: Number,
         default: 0
+    },
+    colors: [String],
+    sizes: [String],
+    brand: {
+        type: [mongoose.Schema.ObjectId],
+        ref: 'Brand'
     },
     createdAt: {
         type: Date,
@@ -55,7 +68,12 @@ const ProductSchema = new mongoose.Schema({
     is_featured: {
         type: Boolean,
         default: false
+    },
+    variants: {
+        type: Object
     }
 });
 
-exports.Product = mongoose.model('Product', ProductSchema);
+const Product = mongoose.model('Product', ProductSchema);
+
+module.exports = Product;

@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
-const AppError = require('./../utils/appError');
+const AppError = require('../utils/appError');
+
 const handleCastErrorDB = (err) => {
     const message = `invalid ${err.path}: ${err.value}.`;
     return new AppError(message, 400); // 400 bad requrest
