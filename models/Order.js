@@ -37,7 +37,6 @@ const OrderSchema = new mongoose.Schema({
         default: Date.now(),
         select: false
     },
-
     user: {
         type: mongoose.Schema.ObjectId,
         ref: 'User',

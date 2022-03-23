@@ -42,6 +42,14 @@ const userSchema = new mongoose.Schema({
         enum: ['admin', 'user', 'seller'],
         default: 'user'
     },
+    wishList: [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: 'Product',
+            default: [],
+            unique: [true, 'Product can be added to wish list only once']
+        }
+    ],
     ratingsAverage: {
         type: Number,
         default: 4,
