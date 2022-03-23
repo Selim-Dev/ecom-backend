@@ -23,14 +23,28 @@ const OrderSchema = new mongoose.Schema({
             default: ''
         }
     },
+    location: {
+        // GeoJSON
+        type: {
+            type: String,
+            default: 'Point',
+            enum: ['Point']
+        },
+        coordinates: [Number]
+    },
     status: {
         type: String,
         enum: ['pending', 'on_the_way', 'delivered', 'canceled', 'retrieved']
     },
     totalPrice: Number,
-    paymentType: {
+    totalPriceAfterDiscount: {
+        type: Number,
+        default: 0
+    },
+    paymentMethod: {
         type: String,
-        enum: ['cash_on_delivery', 'card']
+        enum: ['cash_on_delivery', 'card'],
+        default: 'cash_on_delivery'
     },
     createdAt: {
         type: Date,
@@ -41,6 +55,18 @@ const OrderSchema = new mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: 'User',
         required: [true, 'Order Must Belong To a User']
+    },
+    cancelReason: {
+        type: String
+    },
+    coupon: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Coupon'
+    },
+    couponCode: String,
+    discountValue: {
+        type: Number,
+        default: 0
     }
 });
 
