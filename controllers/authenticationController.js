@@ -4,7 +4,7 @@ const { promisify } = require('util');
 const User = require('../models/User');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
-
+const authValidation = require('../validations/authenticationJoi');
 const signToken = (id) =>
     jwt.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN
@@ -29,28 +29,9 @@ const createAndSendToken = (user, statusCode, res) => {
         }
     });
 };
-function authValidate(user) {
-    const schema = joi.object({
-        name: joi.string().alphanum().required(),
-        email: joi
-            .string()
-            .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
-        password: joi.string().min(3).required(),
-        passwordConfirm: joi.ref('password'),
-        role: joi.string().required(),
-        address: {
-            country: joi.string().required(),
-            city: joi.string().required(),
-            street: joi.string().required(),
-            zip: joi.number().integer()
-        }
-    });
-    return schema.validate(user);
-    // console.log(result);
-    // return result;
-}
+
 exports.signup = catchAsync(async (req, res, next) => {
-    authValidate(req.body);
+    authValidation.authValidate(req.body);
     const {
         name,
         email,
