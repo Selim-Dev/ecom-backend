@@ -15,6 +15,7 @@ const userRouter = require('./routes/userRoutes');
 const sellerReviewRouter = require('./routes/sellerReviewRoutes');
 const productRouter = require('./routes/productRoutes');
 const sizeRoutes = require('./routes/sizeRoutes');
+const brandRoutes = require('./routes/brandRoutes');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
@@ -81,6 +82,7 @@ app.use((req, res, next) => {
 app.use('/api/v1/category', categoryRoutes);
 app.use('/api/v1/subCategory', subCategoryRoute);
 app.use('/api/v1/size', sizeRoutes);
+app.use('/api/v1/brand', brandRoutes);
 
 //this api run for all request methods (get-post-delete-patch)
 app.use('/api/v1/users', userRouter);

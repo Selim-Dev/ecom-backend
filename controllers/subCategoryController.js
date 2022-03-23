@@ -5,8 +5,8 @@ const Category = require('../models/Category');
 
 exports.getAll = factory.getAll(SubCategory);
 exports.creatSubCategory = catchAsync(async (req, res, next) => {
-    const { name, photo } = req.body;
-    const subCategory = await SubCategory.create({ name, photo });
+    const { name, photo, brands } = req.body;
+    const subCategory = await SubCategory.create({ name, photo, brands });
     const cat = await Category.findOneAndUpdate(req.body.category, {
         $push: { subCategories: req.body.category }
     });

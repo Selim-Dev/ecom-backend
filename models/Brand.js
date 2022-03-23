@@ -6,9 +6,11 @@ const BrandSchema = new mongoose.Schema({
         required: [true, 'Brand name is required'],
         unique: [true, 'Brand name must be unique']
     },
-    subCategories: [
-        { type: mongoose.Schema.ObjectId, ref: 'SubCategory', default: [] }
-    ]
+    status: {
+        type: String,
+        enum: ['Active', 'Pending'],
+        default: 'Active'
+    }
 });
 
 const Brand = mongoose.model('Brand', BrandSchema);
