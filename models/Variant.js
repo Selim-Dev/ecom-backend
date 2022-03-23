@@ -7,7 +7,7 @@ const variantSchema = new mongoose.Schema({
         unique: [true, 'category name must be unique']
     },
     options: [
-        { type: mongoose.Schema.ObjectId, ref: 'SubCategory', default: [] }
+        { type: mongoose.Schema.ObjectId, ref: 'VariantOption', default: [] }
     ]
 });
 

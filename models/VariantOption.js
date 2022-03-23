@@ -8,6 +8,6 @@ const variantOptionsSchema = new mongoose.Schema({
     }
 });
 
-const VariantOptions = mongoose.model('VariantOptions', variantOptionsSchema);
+const VariantOptions = mongoose.model('VariantOption', variantOptionsSchema);
 
 module.exports = VariantOptions;

@@ -51,7 +51,10 @@ const ProductSchema = new mongoose.Schema({
     },
     colors: [String],
     sizes: [String],
-    brand: String,
+    brand: {
+        type: [mongoose.Schema.ObjectId],
+        ref: 'Brand'
+    },
     createdAt: {
         type: Date,
         default: Date.now(),
@@ -65,15 +68,12 @@ const ProductSchema = new mongoose.Schema({
     is_featured: {
         type: Boolean,
         default: false
+    },
+    variants: {
+        type: Object
     }
 });
 
 const Product = mongoose.model('Product', ProductSchema);
 
 module.exports = Product;
-
-const { name } = req.body;
-const brand = await Brand.create({
-    name,
-    status: req.user.role === 'seller' ? 'pending' : 'active'
-});

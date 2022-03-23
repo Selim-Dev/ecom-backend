@@ -9,12 +9,7 @@ const subCategoriesSchema = new mongoose.Schema({
     photo: {
         type: String
     },
-
-    variants: {
-        type: [mongoose.Schema.ObjectId],
-        ref: 'Varient',
-        default: []
-    },
+    variants: [{ type: mongoose.Schema.ObjectId, ref: 'Variant', default: [] }],
     brands: [{ type: mongoose.Schema.ObjectId, ref: 'Brand', default: [] }]
 });
 

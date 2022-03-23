@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 // const SubCategory = require('./SubCategory');
-const OrderSchema = new mongoose.Schema({
+const OrderItemSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
@@ -27,7 +27,6 @@ const OrderSchema = new mongoose.Schema({
         type: String,
         enum: ['pending', 'on_the_way', 'delivered', 'canceled', 'retrieved']
     },
-    totalPrice: Number,
     paymentType: {
         type: String,
         enum: ['cash_on_delivery', 'card']
@@ -36,6 +35,21 @@ const OrderSchema = new mongoose.Schema({
         type: Date,
         default: Date.now(),
         select: false
+    },
+    category: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Category',
+        required: [true, 'Order Must Belong To a Seller']
+    },
+    subCategory: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'SubCategory',
+        required: [true, 'Order Must Belong To a Seller']
+    },
+    seller: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+        required: [true, 'Order Must Belong To a Seller']
     },
 
     user: {
