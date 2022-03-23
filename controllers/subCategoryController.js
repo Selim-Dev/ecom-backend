@@ -5,11 +5,14 @@ const Category = require('../models/Category');
 
 exports.getAll = factory.getAll(SubCategory);
 exports.creatSubCategory = catchAsync(async (req, res, next) => {
-    const { name, photo } = req.body;
+    const { name, photo, category: categoryId } = req.body;
     const subCategory = await SubCategory.create({ name, photo });
-    const cat = await Category.findOneAndUpdate(req.body.category, {
-        $push: { subCategories: req.body.category }
-    });
+    const cat = await Category.findOneAndUpdate(
+        { _id: categoryId },
+        {
+            $push: { subCategories: subCategory._id }
+        }
+    );
     res.status(201).json({
         status: 'success',
         data: {
@@ -20,5 +23,3 @@ exports.creatSubCategory = catchAsync(async (req, res, next) => {
 exports.getOne = factory.getOne(SubCategory);
 exports.editById = factory.updateOne(SubCategory);
 exports.deleteById = factory.deleteOne(SubCategory);
-
-

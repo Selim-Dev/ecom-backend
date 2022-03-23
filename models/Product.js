@@ -34,8 +34,8 @@ const ProductSchema = new mongoose.Schema({
         required: [true, 'product must have a price']
     },
     sku: {
-        type: Number,
-        unique: [true, 'product sku must be unique']
+        type: String
+        // unique: [true, 'product sku must be unique']
     },
     stock: Number,
     ratingsAverage: {
@@ -49,6 +49,9 @@ const ProductSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    colors: [String],
+    sizes: [String],
+    brand: String,
     createdAt: {
         type: Date,
         default: Date.now(),
@@ -68,3 +71,9 @@ const ProductSchema = new mongoose.Schema({
 const Product = mongoose.model('Product', ProductSchema);
 
 module.exports = Product;
+
+const { name } = req.body;
+const brand = await Brand.create({
+    name,
+    status: req.user.role === 'seller' ? 'pending' : 'active'
+});
