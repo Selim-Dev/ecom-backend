@@ -21,4 +21,9 @@ router
     .route('/')
     .get(userController.getAllUsers)
     .post(userController.createUser);
+router
+    .route('/wishlist/:id')
+    .post(userController.addWishList)
+    .delete(userController.deleteWishList)
+
 module.exports = router;

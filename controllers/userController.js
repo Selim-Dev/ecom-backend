@@ -3,6 +3,7 @@ const factory = require('./handlerFactory');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
+
 const filterObj = (obj, ...allowedFields) => {
     const newObj = {};
     Object.keys(obj).forEach((el) => {
@@ -62,3 +63,31 @@ exports.getAllUsers = factory.getAll(User);
 exports.getUser = factory.getOne(User);
 exports.updateUser = factory.updateOne(User);
 exports.deleteUser = factory.deleteOne(User);
+
+exports.addWishList = async (req, res) => {
+
+    const findUser = await User.findByIdAndUpdate(req.params.id,
+        { $push: { wishList: req.body.productId } },
+        { new: true, runValidators: true })
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            data: findUser
+        }
+    });
+}
+exports.deleteWishList = async (req, res) => {
+    const deleteWishList = await User.findByIdAndUpdate(req.params.id,
+        { $pull: { wishList: req.body.productId } },
+        { new: true, runValidators: true }
+    )
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            data: deleteWishList
+        }
+    });
+}
+
