@@ -7,9 +7,24 @@ const SubCategory = require('../models/SubCategory');
 const Product = require('../models/Product');
 const ProductReviews = require('../models/ProductReview');
 const AppError = require('../utils/appError');
+const catJoi = require('../validations/categoryJoi')
+
 
 exports.getAll = factory.getAll(Category);
-exports.creatCategory = factory.createOne(Category);
+exports.creatCategory = catchAsync(async (req, res, next) => {
+    const validateCat = catJoi.categoryJoi(req.body)
+    if (validateCat) {
+        return next(new AppError(validateCat.message, 400));
+    }
+    const creatCat = await Category.create(req.body)
+
+    res.status(201).json({
+        status: 'success',
+        data: {
+            data: creatCat
+        }
+    });
+})
 exports.getOne = factory.getOne(Category);
 exports.editById = factory.updateOne(Category);
 
@@ -37,3 +52,4 @@ exports.deleteById = catchAsync(async (req, res, next) => {
         data: null
     });
 });
+

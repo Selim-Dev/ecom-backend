@@ -1,10 +1,12 @@
 const jwt = require('jsonwebtoken');
-const joi = require('joi');
 const { promisify } = require('util');
 const User = require('../models/User');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 // const authValidation = require('../validations/authenticationJoi');
+
+const authenticationJoi = require('../validations/authenticationJoi')
+
 const signToken = (id) =>
     jwt.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN
@@ -31,6 +33,13 @@ const createAndSendToken = (user, statusCode, res) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
+
+    const validateJoi = authenticationJoi.authValidate(req.body)
+    if (validateJoi) {
+        return next(new AppError(validateJoi.message, 400));
+    }
+
+
     // authValidation.authValidate(req.body);
     const {
         name,
@@ -118,15 +127,15 @@ exports.protect = catchAsync(async (req, res, next) => {
 });
 exports.restrictTo =
     (...roles) =>
-    (req, res, next) => {
-        // roles [ 'admin','seller','user']
-        if (!roles.includes(req.user.role)) {
-            return next(
-                new AppError(
-                    'YOu are not authorized to perform this action',
-                    403 // 403 forbidden
-                )
-            );
-        }
-        next();
-    };
+        (req, res, next) => {
+            // roles [ 'admin','seller','user']
+            if (!roles.includes(req.user.role)) {
+                return next(
+                    new AppError(
+                        'YOu are not authorized to perform this action',
+                        403 // 403 forbidden
+                    )
+                );
+            }
+            next();
+        };
