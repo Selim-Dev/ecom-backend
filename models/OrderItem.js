@@ -46,8 +46,8 @@ const OrderItemSchema = new mongoose.Schema(
                 'pending',
                 'on_the_way',
                 'delivered',
+                'retrieved',
                 'canceled',
-                'retrieved'
             ]
         },
         variants: {
