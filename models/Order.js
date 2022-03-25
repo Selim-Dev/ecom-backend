@@ -65,5 +65,12 @@ const OrderSchema = new mongoose.Schema({
         default: 0
     }
 });
+OrderSchema.virtual('orderItems', {
+    ref: 'OrderItem',
+    foreignField: 'order',
+    localField: '_id'
+});
 
-exports.Order = mongoose.model('Order', OrderSchema);
+const Order = mongoose.model('Order', OrderSchema);
+
+module.exports = Order;

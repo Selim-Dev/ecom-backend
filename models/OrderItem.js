@@ -40,6 +40,9 @@ const OrderItemSchema = new mongoose.Schema({
         type: String,
         enum: ['pending', 'on_the_way', 'delivered', 'canceled', 'retrieved']
     },
+    variants: {
+        type: Object
+    },
     createdAt: {
         type: Date,
         default: Date.now(),
