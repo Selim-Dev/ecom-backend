@@ -7,10 +7,9 @@ const AppError = require('../utils/appError');
 const Order = require('../models/Order');
 const OrderItem = require('../models/OrderItem');
 const Product = require('../models/Product');
+const orderJoi = require('../validations/orderJoi');
 
-exports.getAll = factory.getAll(Order, {
-    path: 'orderItems'
-});
+exports.getAll = factory.getAll(Order);
 exports.creatOrder = catchAsync(async (req, res, next) => {
     const { shippingAddress, location, paymentMethod, userId, orderItems } =
         req.body;
@@ -18,21 +17,10 @@ exports.creatOrder = catchAsync(async (req, res, next) => {
     let totalPrice = 0;
     let order;
     orderItems.forEach(async (item) => {
-        const product = await Product.findById(item.productId);
-        if (!product) {
-            return next(new AppError(`No Product Found With That id`, 404));
-        }
-        if (product.stock < item.quantity) {
-            return next(
-                new AppError(
-                    `Product ${product.name} has maximum of ${product.stock} in stock`,
-                    404
-                )
-            );
-        }
         totalPrice += item.price * 1;
     });
     console.log(totalPrice);
+
     // 2) check for coupons and throw error if coupon is wrong
 
     // 3) calculate total price after discount if coupon exist
@@ -54,18 +42,36 @@ exports.creatOrder = catchAsync(async (req, res, next) => {
         // 2) create order items and save them
         orderItems.forEach(async (item) => {
             const product = await Product.findById(item.productId);
-            await OrderItem.create({
-                name: item.name,
-                price: item.price,
-                order: order._id,
+            if (!product) {
+                return next(new AppError(`No Product Found With That id`, 404));
+            }
+            if (product.stock < item.quantity) {
+                return next(
+                    new AppError(
+                        `Product ${product.name} has maximum of ${product.stock} in stock`,
+                        404
+                    )
+                );
+            }
+            const orderItemCreated = await OrderItem.create({
+                name: product.name,
+                // price: item.price,
+                quantity: item.quantity,
                 product: item.productId,
-                category: item.categoryId,
-                subCategory: item.subCategoryId,
-                seller: item.sellerId,
+                order: order._id,
+                category: product.category,
+                subCategory: product.subCategory,
+                seller: product.seller,
                 user: userId,
                 status: 'pending',
                 variants: product.variants
             });
+            await Order.findOneAndUpdate(
+                { _id: order._id },
+                {
+                    $push: { orderItems: orderItemCreated._id }
+                }
+            );
         });
         // 2) foreach order item reduce the product stock by the item numbers
 
@@ -84,7 +90,10 @@ exports.creatOrder = catchAsync(async (req, res, next) => {
     });
 });
 
-exports.getOne = factory.getOne(Order);
+exports.getOne = factory.getOne(Order, {
+    path: 'orderItems',
+    select: 'product price'
+});
 exports.editById = factory.updateOne(Order);
 
 exports.deleteById = catchAsync(async (req, res, next) => {

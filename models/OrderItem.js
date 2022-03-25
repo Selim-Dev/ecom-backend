@@ -10,11 +10,11 @@ const OrderItemSchema = new mongoose.Schema(
             type: Number,
             required: [true, 'Order Item price is required']
         },
-        order: {
-            type: mongoose.Schema.ObjectId,
-            ref: 'Order',
-            required: [true, 'Order Item Must Belong To an Order']
-        },
+        // order: {
+        //     type: mongoose.Schema.ObjectId,
+        //     ref: 'Order',
+        //     required: [true, 'Order Item Must Belong To an Order']
+        // },
         product: {
             type: mongoose.Schema.ObjectId,
             ref: 'Product',

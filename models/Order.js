@@ -29,6 +29,9 @@ const OrderSchema = new mongoose.Schema(
             },
             coordinates: [Number]
         },
+        orderItems: [
+            { type: mongoose.Schema.ObjectId, ref: 'OrderItem', default: [] }
+        ],
         status: {
             type: String,
             enum: [
@@ -36,7 +39,8 @@ const OrderSchema = new mongoose.Schema(
                 'on_the_way',
                 'delivered',
                 'canceled',
-                'retrieved'
+                'retrieved',
+                'partiallyDelivered'
             ]
         },
         totalPrice: {
@@ -80,11 +84,11 @@ const OrderSchema = new mongoose.Schema(
         toObject: { virtuals: true }
     }
 );
-OrderSchema.virtual('orderItems', {
-    ref: 'OrderItem',
-    foreignField: 'order',
-    localField: '_id'
-});
+// OrderSchema.virtual('orderItems', {
+//     ref: 'OrderItem',
+//     foreignField: 'order',
+//     localField: '_id'
+// });
 
 const Order = mongoose.model('Order', OrderSchema);
 
