@@ -16,7 +16,7 @@ exports.editById = factory.updateOne(Category);
 exports.deleteById = catchAsync(async (req, res, next) => {
     const cat = await Category.findById(req.params.id); //get All Categories
     if (!cat) {
-        return next(new AppErrorpError(`No document Found With That id`, 404));
+        return next(new AppError(`No document Found With That id`, 404));
     }
     await cat.subCategories.forEach(
         async (e) => await SubCategory.findByIdAndDelete(e)
