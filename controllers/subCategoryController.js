@@ -5,10 +5,16 @@ const Category = require('../models/Category');
 const AppError = require('../utils/appError');
 const Product = require('../models/Product');
 const ProductReviews = require('../models/ProductReview');
-
+const subCategoryJoi = require('../validations/subCategoryJoi')
 
 exports.getAll = factory.getAll(SubCategory);
 exports.creatSubCategory = catchAsync(async (req, res, next) => {
+
+    const validateSubCat = subCategoryJoi.subcatJoi(req.body)
+    if (validateSubCat) {
+        return next(new AppError(validateSubCat.message, 400));
+    }
+
     const { name, photo, category: categoryId, brands } = req.body;
     const subCategory = await SubCategory.create({ name, photo, brands });
     const cat = await Category.findOneAndUpdate(

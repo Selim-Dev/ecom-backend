@@ -7,9 +7,24 @@ const SubCategory = require('../models/SubCategory');
 const Product = require('../models/Product');
 const ProductReviews = require('../models/ProductReview');
 const AppError = require('../utils/appError');
+const catJoi = require('../validations/categoryJoi')
+
 
 exports.getAll = factory.getAll(Category);
-exports.creatCategory = factory.createOne(Category);
+exports.creatCategory = catchAsync(async (req, res, next) => {
+    const validateCat = catJoi.categoryJoi(req.body)
+    if (validateCat) {
+        return next(new AppError(validateCat.message, 400));
+    }
+    const creatCat = await Category.create(req.body)
+
+    res.status(201).json({
+        status: 'success',
+        data: {
+            data: creatCat
+        }
+    });
+})
 exports.getOne = factory.getOne(Category);
 exports.editById = factory.updateOne(Category);
 
@@ -38,23 +53,3 @@ exports.deleteById = catchAsync(async (req, res, next) => {
     });
 });
 
-// [
-//     {
-//       album: [ 'aa', 'bb', 'cc' ],
-//       ratingsAverage: 4,
-//       ratingsQuantitiy: 0,
-//       is_featured: false,
-//       _id: 623a47711d2b13258c59c98b,
-//       name: 'phonex',
-//       photo: 'image2.jpg',
-//       description: 'this is the best phone',
-//       seller: 62321a4d9952393198a8c861,
-//       category: 623a22feca44e022649adcd5,
-//       subCategory: 6237932dbe6e122e64555757,
-//       salePrice: 6000,
-//       listPrice: 6100,
-//       sku: 1223345,
-//       stock: 3,
-//       __v: 0
-//     }
-//   ]
