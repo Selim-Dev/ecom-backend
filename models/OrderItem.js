@@ -3,17 +3,18 @@ const mongoose = require('mongoose');
 const OrderItemSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true
+        required: [true, 'Order Item name must have a name']
     },
     price: Number,
-    status: {
-        type: String,
-        enum: ['pending', 'on_the_way', 'delivered', 'canceled', 'retrieved']
-    },
     order: {
         type: mongoose.Schema.ObjectId,
         ref: 'Order',
         required: [true, 'Order Item Must Belong To an Order']
+    },
+    product: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Product',
+        required: [true, 'Order Item Must Belong To a Product']
     },
     category: {
         type: mongoose.Schema.ObjectId,
@@ -34,6 +35,10 @@ const OrderItemSchema = new mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: 'User',
         required: [true, 'Order Item Must Belong To a User']
+    },
+    status: {
+        type: String,
+        enum: ['pending', 'on_the_way', 'delivered', 'canceled', 'retrieved']
     },
     createdAt: {
         type: Date,

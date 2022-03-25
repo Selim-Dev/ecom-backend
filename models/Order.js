@@ -1,10 +1,6 @@
 const mongoose = require('mongoose');
 // const SubCategory = require('./SubCategory');
 const OrderSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true
-    },
     shippingAddress: {
         country: {
             type: String,

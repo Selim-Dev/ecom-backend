@@ -4,8 +4,8 @@ const User = require('../models/User');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 // const authValidation = require('../validations/authenticationJoi');
-const authenticationJoi = require('../validations/authenticationJoi')
 
+const authenticationJoi = require('../validations/authenticationJoi')
 
 const signToken = (id) =>
     jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -33,10 +33,12 @@ const createAndSendToken = (user, statusCode, res) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
+
     const validateJoi = authenticationJoi.authValidate(req.body)
     if (validateJoi) {
         return next(new AppError(validateJoi.message, 400));
     }
+
 
     // authValidation.authValidate(req.body);
     const {
