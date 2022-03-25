@@ -55,7 +55,7 @@ exports.creatOrder = catchAsync(async (req, res, next) => {
             }
             const orderItemCreated = await OrderItem.create({
                 name: product.name,
-                // price: item.price,
+                price: item.price,
                 quantity: item.quantity,
                 product: item.productId,
                 order: order._id,
