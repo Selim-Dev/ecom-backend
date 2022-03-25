@@ -24,7 +24,11 @@ const categoryRoutes = require('./routes/categoryRoutes'); ////////
 const subCategoryRoute = require('./routes/subCategoryRoute'); ////////
 const variantRoute = require('./routes/VariantRoutes'); ////////
 const variantOptionRoute = require('./routes/VariantOptionsRoutes'); ////////
-const contactRout = require('./routes/contactRoutes')
+
+const couponRoute = require('./routes/couponRoutes'); ////////
+
+const contactRoute = require('./routes/contactRoutes')
+
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
@@ -95,7 +99,11 @@ app.use('/api/v1/productReviews', productReviewRouter);
 app.use('/api/v1/products', productRouter);
 app.use('/api/v1/variant', variantRoute);
 app.use('/api/v1/variantOption', variantOptionRoute);
-app.use('/api/v1/contactUs', contactRout);
+
+app.use('/api/v1/coupon', couponRoute);
+
+app.use('/api/v1/contactUs', contactRoute);
+
 
 app.all('*', (req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server`, 400)); // 400 bad requrest
