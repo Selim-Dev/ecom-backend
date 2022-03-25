@@ -4,7 +4,7 @@ const { promisify } = require('util');
 const User = require('../models/User');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
-const authValidation = require('../validations/authenticationJoi');
+// const authValidation = require('../validations/authenticationJoi');
 const signToken = (id) =>
     jwt.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN
@@ -31,7 +31,7 @@ const createAndSendToken = (user, statusCode, res) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
-    authValidation.authValidate(req.body);
+    // authValidation.authValidate(req.body);
     const {
         name,
         email,
