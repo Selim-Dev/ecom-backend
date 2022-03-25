@@ -1,10 +1,11 @@
 const joi = require('joi');
 
 exports.authValidate = (user) => {
+
     const schema = joi.object({
         name: joi.string().alphanum().required(),
         email: joi
-            .string()
+            .string().required()
             .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
         password: joi.string().min(3).required(),
         passwordConfirm: joi.ref('password'),
@@ -16,7 +17,11 @@ exports.authValidate = (user) => {
             zip: joi.number().integer()
         }
     });
-    return schema.validate(user);
-    // console.log(result);
-    // return result;
+    const validationResult = schema.validate(user);
+
+    // console.log(validationResult.error)
+
+    return validationResult.error
+
 };
+

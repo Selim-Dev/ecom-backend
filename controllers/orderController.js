@@ -15,10 +15,24 @@ exports.creatOrder = catchAsync(async (req, res, next) => {
     const { shippingAddress, location, paymentMethod, userId, orderItems } =
         req.body;
     //1) Get the total price of the orders
-    let price = 0;
-    orderItems.forEach((item) => {
-        price += item.price;
+    let totalPrice = 0;
+    let order;
+    orderItems.forEach(async (item) => {
+        const product = await Product.findById(item.productId);
+        if (!product) {
+            return next(new AppError(`No Product Found With That id`, 404));
+        }
+        if (product.stock < item.quantity) {
+            return next(
+                new AppError(
+                    `Product ${product.name} has maximum of ${product.stock} in stock`,
+                    404
+                )
+            );
+        }
+        totalPrice += item.price * 1;
     });
+    console.log(totalPrice);
     // 2) check for coupons and throw error if coupon is wrong
 
     // 3) calculate total price after discount if coupon exist
@@ -28,29 +42,19 @@ exports.creatOrder = catchAsync(async (req, res, next) => {
     try {
         // my logic here
         // 1) create the order and save it
-        const order = await Order.create({
+        order = await Order.create({
             shippingAddress,
             location,
             paymentMethod,
             user: userId,
-            status: 'pending'
+            status: 'pending',
+            totalPrice: totalPrice
         });
 
         // 2) create order items and save them
         orderItems.forEach(async (item) => {
             const product = await Product.findById(item.productId);
-            if (!product) {
-                return next(new AppError(`No Product Found With That id`, 404));
-            }
-            if (product.stock < item.quantity) {
-                return next(
-                    new AppError(
-                        `Product ${product.name} has maximum of ${product.stock} in stock`,
-                        404
-                    )
-                );
-            }
-            OrderItem.create({
+            await OrderItem.create({
                 name: item.name,
                 price: item.price,
                 order: order._id,
