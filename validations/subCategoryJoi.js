@@ -15,3 +15,18 @@ exports.subcatJoi = (subCategory) => {
 
 };
 
+exports.editsubcatJoi = (subCategory) => {
+
+    const schema = joi.object({
+        name: joi.string().alphanum(),
+        photo: joi.string(),
+        category: joi.string(),
+        brands: joi.array()
+    });
+    const validationResult = schema.validate(subCategory);
+
+
+    return validationResult.error
+
+};
+
