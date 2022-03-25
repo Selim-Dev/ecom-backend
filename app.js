@@ -26,8 +26,9 @@ const variantRoute = require('./routes/VariantRoutes'); ////////
 const variantOptionRoute = require('./routes/VariantOptionsRoutes'); ////////
 
 const couponRoute = require('./routes/couponRoutes'); ////////
-
 const contactRoute = require('./routes/contactRoutes')
+
+const orderItemRoute = require('./routes/orderItemRoutes')
 
 
 app.set('view engine', 'pug');
@@ -103,7 +104,7 @@ app.use('/api/v1/variantOption', variantOptionRoute);
 app.use('/api/v1/coupon', couponRoute);
 
 app.use('/api/v1/contactUs', contactRoute);
-
+app.use('/api/v1/orderItem',orderItemRoute)
 
 app.all('*', (req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server`, 400)); // 400 bad requrest
