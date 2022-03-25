@@ -26,7 +26,27 @@ exports.creatCategory = catchAsync(async (req, res, next) => {
     });
 })
 exports.getOne = factory.getOne(Category);
-exports.editById = factory.updateOne(Category);
+
+exports.editById =  catchAsync(async (req, res, next) => {
+    const validatecontact = catJoi.editcCtegoryJoi(req.body)
+    if (validatecontact) {
+        return next(new AppError(validatecontact.message, 400));
+    }
+    const updateCategory = await Category.findByIdAndUpdate(req.params.id, req.body,
+         { new: true, runValidators: true })
+
+    if (!updateCategory) {
+        return next(new AppError(`No document Found With That id`, 404));
+    }
+
+    res.status(201).json({
+        status: 'success',
+        data: {
+            data: updateCategory
+        }
+    })
+
+})
 
 exports.deleteById = catchAsync(async (req, res, next) => {
     const cat = await Category.findById(req.params.id); //get All Categories

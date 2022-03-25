@@ -31,7 +31,27 @@ exports.creatSubCategory = catchAsync(async (req, res, next) => {
     });
 });
 exports.getOne = factory.getOne(SubCategory);
-exports.editById = factory.updateOne(SubCategory);
+
+exports.editById =  catchAsync(async (req, res, next) => {
+    const validatecontact = subCategoryJoi.editsubcatJoi(req.body)
+    if (validatecontact) {
+        return next(new AppError(validatecontact.message, 400));
+    }
+    const updatesubCat = await SubCategory.findByIdAndUpdate(req.params.id, req.body,
+         { new: true, runValidators: true })
+
+    if (!updatesubCat) {
+        return next(new AppError(`No document Found With That id`, 404));
+    }
+
+    res.status(201).json({
+        status: 'success',
+        data: {
+            data: updatesubCat
+        }
+    })
+
+})
 
 /// Delete SubCat and the product, Review associated with this SubCat //// 
 exports.deleteById = catchAsync(async (req, res, next) => {

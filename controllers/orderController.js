@@ -1,21 +1,38 @@
 // const express = require('express')
+const mongoose = require('mongoose');
 const factory = require('./handlerFactory');
 const catchAsync = require('../utils/catchAsync');
-const mongoose = require('mongoose');
 
 const AppError = require('../utils/appError');
 const Order = require('../models/Order');
+const OrderItem = require('../models/OrderItem');
 const Product = require('../models/Product');
 
-exports.getAll = factory.getAll(Order);
+exports.getAll = factory.getAll(Order, {
+    path: 'orderItems'
+});
 exports.creatOrder = catchAsync(async (req, res, next) => {
-    const { shippingAddress, location, paymentMethod, user, orderItems } =
+    const { shippingAddress, location, paymentMethod, userId, orderItems } =
         req.body;
     //1) Get the total price of the orders
-    let price = 0;
-    orderItems.forEach((item) => {
-        price += item.price;
+    let totalPrice = 0;
+    let order;
+    orderItems.forEach(async (item) => {
+        const product = await Product.findById(item.productId);
+        if (!product) {
+            return next(new AppError(`No Product Found With That id`, 404));
+        }
+        if (product.stock < item.quantity) {
+            return next(
+                new AppError(
+                    `Product ${product.name} has maximum of ${product.stock} in stock`,
+                    404
+                )
+            );
+        }
+        totalPrice += item.price * 1;
     });
+    console.log(totalPrice);
     // 2) check for coupons and throw error if coupon is wrong
 
     // 3) calculate total price after discount if coupon exist
@@ -25,20 +42,30 @@ exports.creatOrder = catchAsync(async (req, res, next) => {
     try {
         // my logic here
         // 1) create the order and save it
-        Order.create({
+        order = await Order.create({
             shippingAddress,
             location,
             paymentMethod,
-            user
+            user: userId,
+            status: 'pending',
+            totalPrice: totalPrice
         });
 
         // 2) create order items and save them
         orderItems.forEach(async (item) => {
             const product = await Product.findById(item.productId);
-            if (!product) {
-                return next(new AppError(`No Product Found With That id`, 404));
-            }
-            // if(product.stock < item.quantity)
+            await OrderItem.create({
+                name: item.name,
+                price: item.price,
+                order: order._id,
+                product: item.productId,
+                category: item.categoryId,
+                subCategory: item.subCategoryId,
+                seller: item.sellerId,
+                user: userId,
+                status: 'pending',
+                variants: product.variants
+            });
         });
         // 2) foreach order item reduce the product stock by the item numbers
 
@@ -52,8 +79,8 @@ exports.creatOrder = catchAsync(async (req, res, next) => {
     }
 
     res.status(200).json({
-        status: 'success Your Order is deleted',
-        data: req.body
+        status: 'success',
+        data: order
     });
 });
 
