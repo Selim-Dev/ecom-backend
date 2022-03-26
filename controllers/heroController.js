@@ -6,34 +6,24 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const cloudinary = require('../utils/cloudinary');
 
-const multerStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'public/img');
-    },
-    filename: (req, file, cb) => {
-        const ext = file.mimetype.split('/')[1];
-        cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
-    }
-});
-
 // // create multer upload
 // when we do image processing its better to use sharp and save the image to memory so we ca use it later as a buffer in sharp
 // const multerStorage = multer.memoryStorage();
 // // create multer filter
-const multerFilter = (req, file, cb) => {
-    if (file.mimetype.startsWith('image')) {
-        cb(null, true);
-    } else {
-        cb(new AppError('Not an image! Please upload only images', 400), false);
-    }
-};
+// const multerFilter = (req, file, cb) => {
+//     if (file.mimetype.startsWith('image')) {
+//         cb(null, true);
+//     } else {
+//         cb(new AppError('Not an image! Please upload only images', 400), false);
+//     }
+// };
 
-const upload = multer({
-    storage: multerStorage,
-    fileFilter: multerFilter
-});
+// const upload = multer({
+//     storage: multerStorage,
+//     fileFilter: multerFilter
+// });
 
-exports.uploadHeroPhoto = upload.single('image');
+// exports.uploadHeroPhoto = upload.single('image');
 // exports.resizeHeroPhoto = catchAsync(async (req, res, next) => {
 //     if (!req.file) return next();
 //     // we set the file name because when we save it to memory we don't set the filename
@@ -47,29 +37,38 @@ exports.uploadHeroPhoto = upload.single('image');
 //     next();
 // });
 
-exports.uploadImage = catchAsync(async (req, res, next) => {
-    cloudinary.uploader.upload(req.file.path, (err, result) => {
-        res.json(result.url);
-    });
-});
+// exports.uploadImage = catchAsync(async (req, res, next) => {
+//     const response = await cloudinary.uploader.upload(req.file, {
+//         upload_preset: 'ecommerce'
+//     });
+//     res.send(response);
+//     // res.send(response);
+// });
+
 exports.createHero = catchAsync(async (req, res, next) => {
     const { title } = req.body;
-    cloudinary.uploader.upload(req.file.path, (err, result) => {
-        res.json(result.url);
+    if (!req.file) {
+        return next(new AppError('Please upload a file', 400));
+    }
+    // const response = await cloudinary.uploader.upload(req.file.path);
+    const response = await cloudinary.uploader.upload(req.file.path, {
+        upload_preset: 'ecommerce'
     });
-    console.log(req.file);
-    console.log(req.body);
-    // const hero = await Hero.create({
-    //     name,
-    //     status: req.user.role === 'seller' ? 'Pending' : 'Active'
-    // });
+    if (!response) {
+        return next(new AppError('Photo Not Uploaded', 400));
+    }
+    const hero = await Hero.create({
+        title,
+        image: response.secure_url,
+        cloudinary_id: response.public_id
+    });
 
-    // res.status(201).json({
-    //     status: 'success',
-    //     data: {
-    //         data: hero
-    //     }
-    // });
+    res.status(201).json({
+        status: 'success',
+        data: {
+            data: hero
+        }
+    });
 });
 
 exports.updateHero = catchAsync(async (req, res, next) => {
