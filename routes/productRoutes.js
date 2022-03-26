@@ -7,6 +7,7 @@ const authController = require('../controllers/authenticationController');
 router
     .route('/')
     .post(authController.protect, productController.createProduct)
+
     .get(productController.getAllProducts);
 router
     .route('/:id')
