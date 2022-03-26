@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
-// const crypto = require('crypto');
+const crypto = require('crypto');
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -103,24 +103,24 @@ userSchema.pre('save', async function (next) {
     this.passwordConfirm = undefined;
     next();
 });
-// userSchema.pre('save', async function (next) {
-//     // this middleware only workds on save(), create() not findAndUpdate()
+userSchema.pre('save', async function (next) {
+    // this middleware only workds on save(), create() not findAndUpdate()
 
-//     //only run this password i fthe password is modified and the document is not new
-//     if (!this.isModified('password') || this.isNew) return next();
-//     //we update the passwordchangeat
-//     this.passwordChangedAt = Date.now() - 1000;
-//     // we substract 1 sec from the passwordChangedAt because we wanna avoid the jwt creating the token before the passwordChangeAt Date
-//     // so  substract 1 sec we make sure that the token is always created after the password has been changed
-//     next();
-// });
-// /******************  2) Query Middleware ****************/
-// userSchema.pre(/^find/, function (next) {
-//     //^find > any query that has find (find, findOne,findOneAndUpdate....)
-//     /* This Refer to current Query */
-//     this.find({ active: { $ne: false } }); // we say active:ne:false instead of active:true because if some users don't have the active part and they are active we wanna include them
-//     next();
-// });
+    //only run this password i fthe password is modified and the document is not new
+    if (!this.isModified('password') || this.isNew) return next();
+    //we update the passwordchangeat
+    this.passwordChangedAt = Date.now() - 1000;
+    // we substract 1 sec from the passwordChangedAt because we wanna avoid the jwt creating the token before the passwordChangeAt Date
+    // so  substract 1 sec we make sure that the token is always created after the password has been changed
+    next();
+});
+/******************  2) Query Middleware ****************/
+userSchema.pre(/^find/, function (next) {
+    //^find > any query that has find (find, findOne,findOneAndUpdate....)
+    /* This Refer to current Query */
+    this.find({ active: { $ne: false } }); // we say active:ne:false instead of active:true because if some users don't have the active part and they are active we wanna include them
+    next();
+});
 userSchema.methods.correctPassword = async function (
     candidatePassword,
     userPassword
@@ -137,20 +137,20 @@ userSchema.methods.changedPasswordAfter = function (jwtTimestamp) {
     }
     return false;
 };
-// userSchema.methods.createPasswordResetToken = function () {
-//     const resetToken = crypto.randomBytes(32).toString('hex');
-//     // this token is what we will send to the user (it's like a reset password that user can use to create new real password)
-//     // we should never store a plain reset token in the database, (because if hacker get access to our database account he can reset password) , so we should hash it using crypto.hash(and then save it in the DB)
-//     this.passwordResetToken = crypto
-//         .createHash('sha256')
-//         .update(resetToken)
-//         .digest('hex');
-//     console.log(
-//         { resetToken },
-//         { passwordResetToken: this.passwordResetToken }
-//     );
-//     this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
-//     return resetToken;
-// };
+userSchema.methods.createPasswordResetToken = function () {
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    // this token is what we will send to the user (it's like a reset password that user can use to create new real password)
+    // we should never store a plain reset token in the database, (because if hacker get access to our database account he can reset password) , so we should hash it using crypto.hash(and then save it in the DB)
+    this.passwordResetToken = crypto
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex');
+    console.log(
+        { resetToken },
+        { passwordResetToken: this.passwordResetToken }
+    );
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+    return resetToken;
+};
 const User = mongoose.model('User', userSchema);
 module.exports = User;
