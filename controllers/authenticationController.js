@@ -20,6 +20,7 @@ const createAndSendToken = (user, statusCode, res) => {
         ),
         httpOnly: true
     };
+
     if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
     res.cookie('jwt', token, cookieOptions);
     user.password = undefined;
@@ -65,7 +66,7 @@ exports.login = catchAsync(async (req, res, next) => {
     if (!email || !password) {
         return next(new AppError('please provide email and password!', 400));
     }
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ email }).select('+password'); // to retern pass
 
     if (!user || !(await user.correctPassword(password, user.password))) {
         return next(new AppError('InCorrect Email or Password!', 401));
@@ -80,7 +81,7 @@ exports.logout = (req, res) => {
     res.status(200).json({ status: 'success' });
 };
 
-exports.protect = catchAsync(async (req, res, next) => {
+exports.protect = catchAsync(async (req, res, next) => {  // to check if has token ?
     let token;
     if (
         req.headers.authorization &&
@@ -98,7 +99,8 @@ exports.protect = catchAsync(async (req, res, next) => {
             )
         );
     }
-    const decoded = await promisify(jwt.verify)(
+
+    const decoded = await promisify(jwt.verify)(  // to check token 
         token,
         process.env.JWT_SECRET,
         {}
@@ -128,7 +130,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 exports.restrictTo =
     (...roles) =>
         (req, res, next) => {
-            // roles [ 'admin','seller','user']
+            // roles >> [ 'admin','seller','user']
             if (!roles.includes(req.user.role)) {
                 return next(
                     new AppError(

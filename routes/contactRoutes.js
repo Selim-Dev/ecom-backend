@@ -4,7 +4,6 @@ const router = express.Router();
 const contactController = require('../controllers/contactController')
 
 
-
 router
     .route('/:id')
     .get(contactController.getOne)

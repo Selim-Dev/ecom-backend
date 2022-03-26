@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 const categoryController = require('../controllers/categoryController')
-
+const authController = require('../controllers/authenticationController')
 
 
 router
@@ -12,12 +12,26 @@ router
 router
     .route('/')
     .get(categoryController.getAll)
-    .post(categoryController.creatCategory)
+
+router.use(authController.protect); ///////
+
+router
+    .route('/')
+    .post(
+        authController.restrictTo('admin', 'seller'),
+        categoryController.creatCategory
+    )
 
 router
     .route('/:id')
-    .patch(categoryController.editById)
-    .delete(categoryController.deleteById);
+    .patch(
+        authController.restrictTo('admin', 'seller'),
+        categoryController.editById
+    )
+    .delete(
+        authController.restrictTo('admin', 'seller'),
+        categoryController.deleteById
+    );
 
 
 module.exports = router;
