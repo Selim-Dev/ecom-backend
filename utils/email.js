@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-const nodemailer = require('nodemailer'); // package to send email by node js
+const nodemailer = require('nodemailer');
 
 const sendEmail = async (options) => {
     //1) create a transporter (transporter is the service you are gonna use to send the email)
