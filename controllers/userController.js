@@ -3,7 +3,6 @@ const factory = require('./handlerFactory');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
-
 const filterObj = (obj, ...allowedFields) => {
     const newObj = {};
     Object.keys(obj).forEach((el) => {
@@ -27,7 +26,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
             )
         );
     }
-    const filteredBody = filterObj(req.body, 'name', 'email');
+    const filteredBody = filterObj(req.body, 'name', 'email', 'phone');
     const updatedUser = await User.findByIdAndUpdate(
         req.user.id,
         filteredBody,
@@ -65,10 +64,11 @@ exports.updateUser = factory.updateOne(User);
 exports.deleteUser = factory.deleteOne(User);
 
 exports.addWishList = async (req, res) => {
-
-    const findUser = await User.findByIdAndUpdate(req.params.id,
+    const findUser = await User.findByIdAndUpdate(
+        req.params.id,
         { $push: { wishList: req.body.productId } },
-        { new: true, runValidators: true })
+        { new: true, runValidators: true }
+    );
 
     res.status(200).json({
         status: 'success',
@@ -76,12 +76,13 @@ exports.addWishList = async (req, res) => {
             data: findUser
         }
     });
-}
+};
 exports.deleteWishList = async (req, res) => {
-    const deleteWishList = await User.findByIdAndUpdate(req.params.id,
+    const deleteWishList = await User.findByIdAndUpdate(
+        req.params.id,
         { $pull: { wishList: req.body.productId } },
         { new: true, runValidators: true }
-    )
+    );
 
     res.status(200).json({
         status: 'success',
@@ -89,5 +90,4 @@ exports.deleteWishList = async (req, res) => {
             data: deleteWishList
         }
     });
-}
-
+};

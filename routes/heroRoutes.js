@@ -10,7 +10,7 @@ router.use(authController.protect);
 // router.route('/').get(heroController.getAllHero);
 router.route('/').post(
     upload.single('image'),
-    heroController.uploadImage,
+    // heroController.uploadHeroPhoto,
     // heroController.resizeHeroPhoto,
     authController.restrictTo('admin', 'seller'),
     heroController.createHero
