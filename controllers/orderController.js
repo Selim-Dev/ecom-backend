@@ -11,79 +11,74 @@ const orderJoi = require('../validations/orderJoi');
 
 exports.getAll = factory.getAll(Order);
 exports.creatOrder = catchAsync(async (req, res, next) => {
+    const validateOrder = orderJoi.createOrderJoi(req.body);
+    if (validateOrder) {
+        return next(new AppError(validateOrder.message, 400));
+    }
     const { shippingAddress, location, paymentMethod, userId, orderItems } =
         req.body;
     //1) Get the total price of the orders
     let totalPrice = 0;
-    let order;
     orderItems.forEach(async (item) => {
         totalPrice += item.price * 1;
     });
-    console.log(totalPrice);
-
-    // 2) check for coupons and throw error if coupon is wrong
-
-    // 3) calculate total price after discount if coupon exist
-    // open a session for transactions
-    const session = await mongoose.startSession();
-    session.startTransaction();
-    try {
-        // my logic here
-        // 1) create the order and save it
-        order = await Order.create({
-            shippingAddress,
-            location,
-            paymentMethod,
-            user: userId,
-            status: 'pending',
-            totalPrice: totalPrice
-        });
-
-        // 2) create order items and save them
-        orderItems.forEach(async (item) => {
-            const product = await Product.findById(item.productId);
-            if (!product) {
-                return next(new AppError(`No Product Found With That id`, 404));
-            }
-            if (product.stock < item.quantity) {
-                return next(
-                    new AppError(
-                        `Product ${product.name} has maximum of ${product.stock} in stock`,
-                        404
-                    )
-                );
-            }
-            const orderItemCreated = await OrderItem.create({
+    // session (for transactions)
+    // // const session = await mongoose.startSession();
+    // try {
+    //     // session.startTransaction();
+    //     // await session.commitTransaction();
+    // } catch (error) {
+    //     // await session.abortTransaction();
+    //     next(error);
+    // }
+    const orderItemsList = orderItems.map(async (item) => {
+        const product = await Product.findById(item.productId);
+        if (!product) {
+            return next(new AppError(`No Product Found With That id`, 404));
+        }
+        if (product.stock < item.quantity) {
+            return next(
+                new AppError(
+                    `Product ${product.name} has maximum of ${product.stock} in stock`,
+                    404
+                )
+            );
+        }
+        return OrderItem.create([
+            {
                 name: product.name,
-                // price: item.price,
+                price: item.price,
                 quantity: item.quantity,
                 product: item.productId,
-                order: order._id,
                 category: product.category,
                 subCategory: product.subCategory,
                 seller: product.seller,
                 user: userId,
                 status: 'pending',
                 variants: product.variants
-            });
-            await Order.findOneAndUpdate(
-                { _id: order._id },
-                {
-                    $push: { orderItems: orderItemCreated._id }
-                }
-            );
-        });
-        // 2) foreach order item reduce the product stock by the item numbers
+            }
+        ]);
+    });
+    const responses = await Promise.all(orderItemsList);
+    const orderItemsIds = [];
+    responses[0].forEach((item) => orderItemsIds.push(item._id));
 
-        // 3) create transactions
-        await session.commitTransaction();
-    } catch (error) {
-        await session.abortTransaction();
-        next(error);
-    } finally {
-        session.endSession();
-    }
-
+    const order = await Order.create([
+        {
+            shippingAddress,
+            location: location
+                ? {
+                      type: 'Point',
+                      coordinates: [location.long * 1, location.lat * 1]
+                  }
+                : location,
+            paymentMethod,
+            orderItems: orderItemsIds,
+            user: userId,
+            status: 'pending',
+            totalPrice: totalPrice
+        }
+    ]);
     res.status(200).json({
         status: 'success',
         data: order

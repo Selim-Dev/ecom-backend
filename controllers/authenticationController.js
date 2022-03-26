@@ -139,6 +139,7 @@ exports.restrictTo =
         next();
     };
 
+
 exports.forgotPassword = catchAsync(async (req, res, next) => {
     //1) Get the user based on the posted email and password
     const user = await User.findOne({ email: req.body.email });
@@ -236,3 +237,4 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
     // 4)log user in, send jwt
     createAndSendToken(user, 200, res);
 });
+
