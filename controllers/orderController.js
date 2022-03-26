@@ -89,11 +89,33 @@ exports.getOne = factory.getOne(Order, {
     path: 'orderItems',
     select: 'product price'
 });
-exports.editById = factory.updateOne(Order);
 
 exports.deleteById = catchAsync(async (req, res, next) => {
     res.status(204).json({
         status: 'success Your Order is deleted',
         data: null
+    });
+});
+
+exports.editById = catchAsync(async (req, res, next) => {
+    const validatecontact = orderJoi.updateOrderJoi(req.body);
+    if (validatecontact) {
+        return next(new AppError(validatecontact.message, 400));
+    }
+    const updateorderItem = await OrderItem.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true, runValidators: true }
+    );
+
+    if (!updateorderItem) {
+        return next(new AppError(`No document Found With That id`, 404));
+    }
+
+    res.status(201).json({
+        status: 'success',
+        data: {
+            data: updateorderItem
+        }
     });
 });

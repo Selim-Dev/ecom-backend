@@ -28,12 +28,17 @@ exports.createOrderJoi = (Order) => {
 };
 exports.updateOrderJoi = (Order) => {
     const schema = joi.object({
-        code: joi.string(),
-        discount: joi.number(),
-        usersNumber: joi.number(),
-        DiscountMethod: joi.string().valid('percentage', 'amount'),
-        startAt: joi.date(),
-        endAt: joi.date()
+        status: joi
+            .string()
+            .required()
+            .valid(
+                'pending',
+                'on_the_way',
+                'delivered',
+                'canceled',
+                'retrieved',
+                'partiallyDelivered'
+            )
     });
     const validationResult = schema.validate(Order);
 
