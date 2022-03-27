@@ -47,6 +47,8 @@ exports.signup = catchAsync(async (req, res, next) => {
         password,
         passwordConfirm,
         role,
+        photo,
+        phone,
         address: { country, city, street, zip }
     } = req.body;
     const newUser = await User.create({
@@ -55,6 +57,8 @@ exports.signup = catchAsync(async (req, res, next) => {
         password,
         passwordConfirm,
         role,
+        photo,
+        phone,
         address: { country, city, street, zip }
     });
     createAndSendToken(newUser, 201, res);

@@ -2,8 +2,8 @@ const joi = require('joi');
 
 exports.categoryJoi = (category) => {
     const schema = joi.object({
-        name: joi.string().alphanum().required(),
-        photo: joi.string().alphanum().required()
+        name: joi.string().required(),
+        photo: joi.string().required()
     });
     const validationResult = schema.validate(category);
 
@@ -11,7 +11,7 @@ exports.categoryJoi = (category) => {
 };
 exports.editcCtegoryJoi = (category) => {
     const schema = joi.object({
-        name: joi.string().alphanum(),
+        name: joi.string(),
         photo: joi.string().required()
     });
     const validationResult = schema.validate(category);

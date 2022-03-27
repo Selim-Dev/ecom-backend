@@ -3,7 +3,12 @@ const authController = require('../controllers/authenticationController');
 const userController = require('../controllers/userController');
 
 const router = express.Router();
-
+router
+    .route('/:id')
+    .get(userController.getUser)
+    .patch(userController.updateUser)
+    .delete(userController.deleteUser);
+router.route('/').get(userController.getAllUsers);
 router.post('/signup', authController.signup);
 router.post('/login', authController.login);
 router.get('/logout', authController.logout);
@@ -17,15 +22,14 @@ router.patch('/updateMe', userController.updateMe);
 router.delete('/deleteMe', userController.deleteMe);
 router.use(authController.restrictTo('admin'));
 // only admins can do the below routes and middlewares
-router
-    .route('/:id')
-    .get(userController.getUser)
-    .patch(userController.updateUser)
-    .delete(userController.deleteUser);
-router
-    .route('/')
-    .get(userController.getAllUsers)
-    .post(userController.createUser);
+// router
+//     .route('/:id')
+//     .get(userController.getUser)
+//     .patch(userController.updateUser)
+//     .delete(userController.deleteUser);
+// router.route('/').get(userController.getAllUsers);
+
+// .post(userController.createUser);
 router.use(authController.restrictTo('user'));
 // only users can do the below routes and middlewares
 

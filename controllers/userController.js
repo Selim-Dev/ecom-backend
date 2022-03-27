@@ -3,7 +3,6 @@ const factory = require('./handlerFactory');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
-
 const filterObj = (obj, ...allowedFields) => {
     const newObj = {};
     Object.keys(obj).forEach((el) => {
@@ -53,22 +52,23 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
         data: null
     });
 });
-exports.createUser = (req, res) => {
-    res.status(500).json({
-        status: 'error',
-        message: 'This route is not defined! Please use /signup instead.'
-    });
-};
+// exports.createUser = (req, res) => {
+//     res.status(500).json({
+//         status: 'error',
+//         message: 'This route is not defined! Please use /signup instead.'
+//     });
+// };
 exports.getAllUsers = factory.getAll(User);
 exports.getUser = factory.getOne(User);
 exports.updateUser = factory.updateOne(User);
 exports.deleteUser = factory.deleteOne(User);
 
 exports.addWishList = async (req, res) => {
-
-    const findUser = await User.findByIdAndUpdate(req.params.id,
+    const findUser = await User.findByIdAndUpdate(
+        req.params.id,
         { $push: { wishList: req.body.productId } },
-        { new: true, runValidators: true })
+        { new: true, runValidators: true }
+    );
 
     res.status(200).json({
         status: 'success',
@@ -76,12 +76,13 @@ exports.addWishList = async (req, res) => {
             data: findUser
         }
     });
-}
+};
 exports.deleteWishList = async (req, res) => {
-    const deleteWishList = await User.findByIdAndUpdate(req.params.id,
+    const deleteWishList = await User.findByIdAndUpdate(
+        req.params.id,
         { $pull: { wishList: req.body.productId } },
         { new: true, runValidators: true }
-    )
+    );
 
     res.status(200).json({
         status: 'success',
@@ -89,5 +90,4 @@ exports.deleteWishList = async (req, res) => {
             data: deleteWishList
         }
     });
-}
-
+};
