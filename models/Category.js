@@ -9,7 +9,9 @@ const categorySchema = new mongoose.Schema({
     photo: {
         type: String
     },
-
+    cloudinary_id: {
+        type: String
+    },
     subCategories: [
         { type: mongoose.Schema.ObjectId, ref: 'SubCategory', default: [] }
     ]
