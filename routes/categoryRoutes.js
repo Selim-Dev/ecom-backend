@@ -22,6 +22,7 @@ router
 router
     .route('/:id')
     .patch(
+        upload.single('photo'),
         authController.restrictTo('admin', 'seller'),
         categoryController.editById
     )

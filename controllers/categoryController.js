@@ -10,7 +10,9 @@ const AppError = require('../utils/appError');
 const catJoi = require('../validations/categoryJoi');
 const cloudinary = require('../utils/cloudinary');
 
-exports.getAll = factory.getAll(Category);
+exports.getAll = factory.getAll(Category, {
+    path: 'subCategories'
+});
 exports.creatCategory = catchAsync(async (req, res, next) => {
     const validateCat = catJoi.categoryJoi(req.body);
     if (validateCat) {
@@ -30,9 +32,8 @@ exports.creatCategory = catchAsync(async (req, res, next) => {
     }
     const creatCat = await Category.create({
         name,
-        photo: response.url
-            ? `${response.public_id}.${response.format}`
-            : undefined
+        photo: response.secure_url,
+        cloudinary_id: response.public_id
     });
     if (!creatCat) {
         return next(new AppError('Category not created', 400));
@@ -51,23 +52,43 @@ exports.editById = catchAsync(async (req, res, next) => {
     if (validatecontact) {
         return next(new AppError(validatecontact.message, 400));
     }
-    await cloudinary.uploader.destroy('ecommerce/dqolvcg5197ptgdmxcwm', {
-        upload_preset: 'ecommerce'
-    });
-    const updateCategory = await Category.findByIdAndUpdate(
+    const category = await Category.findById(req.params.id);
+    if (!category) {
+        return next(new AppError('No document Found With That id', 404));
+    }
+    let response;
+    if (req.file) {
+        await cloudinary.uploader.destroy(category.cloudinary_id, {
+            upload_preset: 'ecommerce'
+        });
+        response = await cloudinary.uploader.upload(req.file.path, {
+            upload_preset: 'ecommerce'
+        });
+        if (!response) {
+            return next(new AppError('Photo Not Uploaded', 400));
+        }
+    }
+    const data = {
+        name: req.body.name || category.name,
+        photo: response?.secure_url || category.photo,
+        cloudinary_id: response?.public_id || category.cloudinary_id
+    };
+    const updateCat = await Category.findByIdAndUpdate(
         req.params.id,
-        req.body,
-        { new: true, runValidators: true }
+        data
+        // 	, {
+        //     new: true,
+        //     runValidators: true
+        // }
     );
-
-    if (!updateCategory) {
-        return next(new AppError(`No document Found With That id`, 404));
+    if (!updateCat) {
+        return next(new AppError('Category not updated', 400));
     }
 
-    res.status(201).json({
+    res.status(200).json({
         status: 'success',
         data: {
-            data: updateCategory
+            data: updateCat
         }
     });
 });
@@ -86,7 +107,6 @@ exports.deleteById = catchAsync(async (req, res, next) => {
         async (productt) =>
             await ProductReviews.findOneAndDelete({ product: productt._id })
     ); // Delete Review
-
     await Product.deleteMany({
         category: req.params.id
     }); // delete product
@@ -94,9 +114,15 @@ exports.deleteById = catchAsync(async (req, res, next) => {
     await cloudinary.uploader.destroy('q59lvg8b8ydkgpfixkwd.jpg', {
         upload_preset: 'ecommerce'
     });
-    await Category.findByIdAndDelete(req.params.id); // delete Category
+    await cloudinary.uploader.destroy(cat.cloudinary_id, {
+        upload_preset: 'ecommerce'
+    });
+    const deleteCat = await Category.findByIdAndDelete(req.params.id);
+    if (!deleteCat) {
+        return next(new AppError('Category not deleted', 400));
+    }
     res.status(204).json({
-        status: 'success Your Category is deleted',
+        status: 'success',
         data: null
     });
 });
