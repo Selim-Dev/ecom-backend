@@ -46,10 +46,10 @@ const cloudinary = require('../utils/cloudinary');
 // });
 
 exports.createHero = catchAsync(async (req, res, next) => {
-    const { title } = req.body;
     if (!req.file) {
         return next(new AppError('Please upload a file', 400));
     }
+    const { title } = req.body;
     // const response = await cloudinary.uploader.upload(req.file.path);
     const response = await cloudinary.uploader.upload(req.file.path, {
         upload_preset: 'ecommerce'
@@ -62,7 +62,9 @@ exports.createHero = catchAsync(async (req, res, next) => {
         image: response.secure_url,
         cloudinary_id: response.public_id
     });
-
+    if (!hero) {
+        return next(new AppError('Hero not created', 400));
+    }
     res.status(201).json({
         status: 'success',
         data: {
@@ -72,19 +74,64 @@ exports.createHero = catchAsync(async (req, res, next) => {
 });
 
 exports.updateHero = catchAsync(async (req, res, next) => {
-    const { name } = req.body;
-    const updatedHero = await Hero.findByIdAndUpdate(req.params.id, {
-        name,
-        status: req.user.role === 'seller' ? 'Pending' : 'Active'
+    const { title } = req.body;
+    const hero = await Hero.findById(req.params.id);
+    console.log(req.body.title);
+    if (!hero) {
+        return next(new AppError('No document Found With That id', 404));
+    }
+    let response;
+    if (req.file) {
+        console.log('i entered the function');
+        await cloudinary.uploader.destroy(hero.cloudinary_id, {
+            upload_preset: 'ecommerce'
+        });
+        console.log('i deleted the image');
+        response = await cloudinary.uploader.upload(req.file.path, {
+            upload_preset: 'ecommerce'
+        });
+        console.log('i uploaded the image', response);
+        if (!response) {
+            return next(new AppError('Photo Not Uploaded', 400));
+        }
+    }
+
+    const data = {
+        title: req.body.title || hero.title,
+        image: response?.secure_url || hero.image,
+        cloudinary_id: response?.public_id || hero.cloudinary_id
+    };
+    // res.status(200).json({
+    //     status: 'success',
+    //     data: {
+    //         data: req.params.id
+    //     }
+    // });
+    const editedHero = await Hero.findByIdAndUpdate(req.params.id, data, {
+        new: true
     });
-    res.status(201).json({
+
+    res.status(200).json({
         status: 'success',
         data: {
-            data: updatedHero
+            data: editedHero
         }
     });
 });
 
-exports.getAllHeros = factory.getAll(Hero);
+exports.getAllHero = factory.getAll(Hero);
 exports.getHero = factory.getOne(Hero);
-exports.deleteHero = factory.deleteOne(Hero);
+exports.deleteHero = catchAsync(async (req, res, next) => {
+    const hero = await Hero.findById(req.params.id);
+    if (!hero) {
+        return next(new AppError('No document Found With That id', 404));
+    }
+    await cloudinary.uploader.destroy(hero.cloudinary_id, {
+        upload_preset: 'ecommerce'
+    });
+    await hero.remove();
+    res.status(204).json({
+        status: 'success',
+        data: null
+    });
+});

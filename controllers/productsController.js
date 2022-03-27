@@ -1,41 +1,59 @@
 const Product = require('../models/Product');
 const factory = require('./handlerFactory');
+const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
+const cloudinary = require('../utils/cloudinary');
 
-// exports.createProduct = async (req, res, next) => {
-//     const {
-//         name,
-//         photo,
-//         album,
-//         description,
-//         seller,
-//         price: { salePrice, listPrice },
-//         sku,
-//         stock
-//     } = req.body;
-//     try {
-//         let product = await Product.findOne({ sku });
-//         if (product) {
-//             throw new Error('product Sku number found in the database');
-//         }
-//         product = new Product({
-//             name,
-//             photo,
-//             album,
-//             description,
-//             seller,
-//             price: { salePrice, listPrice },
-//             sku,
-//             stock
-//         });
-//         const createdProduct = await product.save();
-//         res.send(createdProduct);
-//     } catch (error) {
-//         error.statusCode = 500;
-//         next(error);
-//     }
-// };
-//
-exports.createProduct = factory.createOne(Product);
+exports.createProduct = catchAsync(async (req, res, next) => {
+    const {
+        name,
+        salePrice,
+        listPrice,
+        description,
+        seller,
+        category,
+        subCategory,
+        stock,
+        sku
+    } = req.body;
+    console.log(req.files.photo[0].path);
+    console.log(req.files.album);
+    const photo = await cloudinary.uploader.upload(req.files.photo[0].path, {
+        upload_preset: 'ecommerce'
+    });
+    if (!photo) {
+        return next(new AppError('Photo Not Uploaded', 400));
+    }
+    const album = await Promise.all(
+        req.files.album.map(async (file) => {
+            return cloudinary.uploader.upload(file.path, {
+                upload_preset: 'ecommerce'
+            });
+        })
+    );
+    const prod = await Product.create({
+        name,
+        salePrice,
+        listPrice,
+        description,
+        seller,
+        category,
+        subCategory,
+        stock,
+        sku,
+        photo: photo.secure_url,
+        photo_id: photo.public_id,
+        album: album.map((item) => item.secure_url),
+        album_id: album.map((item) => item.public_id)
+    });
+    // console.log(req.body);
+    res.status(201).json({
+        status: 'success',
+        data: {
+            data: prod
+        }
+    });
+});
 exports.getAllProducts = factory.getAll(Product);
 exports.getProduct = factory.getOne(Product);
 exports.updateProduct = factory.updateOne(Product);

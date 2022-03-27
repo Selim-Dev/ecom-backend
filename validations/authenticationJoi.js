@@ -2,7 +2,7 @@ const joi = require('joi');
 
 exports.authValidate = (user) => {
     const schema = joi.object({
-        name: joi.string().alphanum().required(),
+        name: joi.string().required(),
         email: joi
             .string()
             .required()
