@@ -54,7 +54,33 @@ exports.createProduct = catchAsync(async (req, res, next) => {
         }
     });
 });
-exports.getAllProducts = factory.getAll(Product);
-exports.getProduct = factory.getOne(Product);
+exports.getAllProducts = factory.getAll(Product, [
+    {
+        path: 'category',
+        Model: 'Category'
+    },
+    {
+        path: 'subCategory',
+        Model: 'SubCategory'
+    },
+    {
+        path: 'seller',
+        Model: 'User'
+    }
+]);
+exports.getProduct = factory.getOne(Product, [
+    {
+        path: 'categories',
+        Model: 'Category'
+    },
+    {
+        path: 'subCategory',
+        Model: 'SubCategory'
+    },
+    {
+        path: 'seller',
+        Model: 'User'
+    }
+]);
 exports.updateProduct = factory.updateOne(Product);
 exports.deleteProduct = factory.deleteOne(Product);
