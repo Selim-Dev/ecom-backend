@@ -35,7 +35,13 @@ exports.getAll = (Model, popOptions) =>
         if (req.params.tourId) {
             filter = { tour: req.params.tourId };
         }
-        const features = new ApiFeatures(Model.find(filter), req.query)
+        let queryBeforeFilter;
+        if (popOptions) {
+            queryBeforeFilter = Model.find(filter).populate(popOptions);
+        } else {
+            queryBeforeFilter = Model.find(filter);
+        }
+        const features = new ApiFeatures(queryBeforeFilter, req.query)
             .filter()
             .sort()
             .limitFields()
