@@ -72,6 +72,10 @@ const userSchema = new mongoose.Schema({
         minLength: 8,
         select: false // to prevent the return of password in any response
     },
+    isBanned: {
+        type: Boolean,
+        default: false
+    },
     passwordConfirm: {
         type: String,
         required: [true, 'Please Provide Password Confirmation!'],
