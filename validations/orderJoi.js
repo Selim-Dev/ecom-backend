@@ -3,7 +3,7 @@ const joi = require('joi');
 const shippingAddressSchema = joi.object().keys({
     country: joi.string().required(),
     city: joi.string().required(),
-    address: joi.string().required(),
+    street: joi.string().required(),
     buildingNum: joi.string().required(),
     zip: joi.string().required()
 });
