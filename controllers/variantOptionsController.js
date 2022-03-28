@@ -39,6 +39,8 @@ exports.deleteVariantOption = catchAsync(async (req, res, next) => {
     });
 });
 
-exports.getAllVariantOptions = factory.getAll(VariantOption);
+exports.getAllVariantOptions = factory.getAll(VariantOption, {
+    path: 'variant'
+});
 exports.getVariantOption = factory.getOne(VariantOption);
 exports.updateVariantOption = factory.updateOne(VariantOption);
