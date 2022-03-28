@@ -44,6 +44,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     const {
         name,
         email,
+        phone,
         password,
         passwordConfirm,
         role,
@@ -54,6 +55,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     const newUser = await User.create({
         name,
         email,
+        phone,
         password,
         passwordConfirm,
         role,

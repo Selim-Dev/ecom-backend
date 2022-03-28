@@ -12,7 +12,11 @@ const ProductSchema = new mongoose.Schema({
     photo: {
         type: String
     },
+    photo_id: {
+        type: String
+    },
     album: [String],
+    album_id: [String],
     category: {
         type: mongoose.Schema.ObjectId,
         ref: 'Category',
@@ -66,6 +70,10 @@ const ProductSchema = new mongoose.Schema({
         select: false
     },
     is_featured: {
+        type: Boolean,
+        default: false
+    },
+    published: {
         type: Boolean,
         default: false
     },

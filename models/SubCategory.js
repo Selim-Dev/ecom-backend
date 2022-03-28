@@ -7,6 +7,10 @@ const subCategoriesSchema = new mongoose.Schema({
         unique: [true, 'category name must be unique']
     },
     photo: {
+        type: String,
+        required: [true, 'Sub category photo is requred']
+    },
+    cloudinary_id: {
         type: String
     },
     variants: [{ type: mongoose.Schema.ObjectId, ref: 'Variant', default: [] }],

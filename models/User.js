@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -70,6 +71,10 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Please Provide Password!'],
         minLength: 8,
         select: false // to prevent the return of password in any response
+    },
+    isBanned: {
+        type: Boolean,
+        default: false
     },
     passwordConfirm: {
         type: String,

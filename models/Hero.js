@@ -8,6 +8,10 @@ const HeroSchema = new mongoose.Schema({
     image: {
         type: String,
         required: [true, 'Hero title is required']
+    },
+    cloudinary_id: {
+        type: String,
+        required: [true, 'Hero cloudinary id is required']
     }
 });
 
