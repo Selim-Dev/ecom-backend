@@ -4,15 +4,11 @@ const router = express.Router();
 const variantController = require('../controllers/variantController');
 const authController = require('../controllers/authenticationController');
 
-router
-    .route('/:id')
-    .get(variantController.getVariant);
+router.route('/:id').get(variantController.getVariant);
 
-router
-    .route('/')
-    .get(variantController.getAllVariants)
+router.route('/').get(variantController.getAllVariants);
 
-router.use(authController.protect); ///// 
+router.use(authController.protect);
 
 router
     .route('/')
