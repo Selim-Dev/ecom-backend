@@ -44,7 +44,6 @@ exports.signup = catchAsync(async (req, res, next) => {
     const {
         name,
         email,
-        phone,
         password,
         passwordConfirm,
         role,
