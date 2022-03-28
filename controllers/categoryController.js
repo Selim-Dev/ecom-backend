@@ -45,7 +45,9 @@ exports.creatCategory = catchAsync(async (req, res, next) => {
         }
     });
 });
-exports.getOne = factory.getOne(Category);
+exports.getOne = factory.getOne(Category, {
+    path: 'subCategories'
+});
 
 exports.editById = catchAsync(async (req, res, next) => {
     const validatecontact = catJoi.editcCtegoryJoi(req.body);

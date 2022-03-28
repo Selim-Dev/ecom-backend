@@ -135,18 +135,18 @@ exports.protect = catchAsync(async (req, res, next) => {
 });
 exports.restrictTo =
     (...roles) =>
-    (req, res, next) => {
-        // roles [ 'admin','seller','user']
-        if (!roles.includes(req.user.role)) {
-            return next(
-                new AppError(
-                    'YOu are not authorized to perform this action',
-                    403 // 403 forbidden
-                )
-            );
-        }
-        next();
-    };
+        (req, res, next) => {
+            // roles [ 'admin','seller','user']
+            if (!roles.includes(req.user.role)) {
+                return next(
+                    new AppError(
+                        'YOu are not authorized to perform this action',
+                        403 // 403 forbidden
+                    )
+                );
+            }
+            next();
+        };
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
     //1) Get the user based on the posted email and password
