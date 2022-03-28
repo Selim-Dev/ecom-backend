@@ -5,7 +5,7 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
 exports.deleteVariant = catchAsync(async (req, res, next) => {
-    const v = await Variant.findById(req.params.id); //get All Variants
+    const v = await Variant.findByIdAndDelete(req.params.id); //get All Variants
     if (!v) {
         return next(new AppError(`No document Found With That id`, 404));
     }
