@@ -135,18 +135,18 @@ exports.protect = catchAsync(async (req, res, next) => {
 });
 exports.restrictTo =
     (...roles) =>
-        (req, res, next) => {
-            // roles [ 'admin','seller','user']
-            if (!roles.includes(req.user.role)) {
-                return next(
-                    new AppError(
-                        'YOu are not authorized to perform this action',
-                        403 // 403 forbidden
-                    )
-                );
-            }
-            next();
-        };
+    (req, res, next) => {
+        // roles [ 'admin','seller','user']
+        if (!roles.includes(req.user.role)) {
+            return next(
+                new AppError(
+                    'YOu are not authorized to perform this action',
+                    403 // 403 forbidden
+                )
+            );
+        }
+        next();
+    };
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
     //1) Get the user based on the posted email and password
@@ -182,7 +182,8 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
         });
         res.status(200).json({
             status: 'success',
-            message: 'token sent to email'
+            message: 'token sent to email',
+            resetToken: resetToken
         });
     } catch (err) {
         //if error happened: we want to reset the token and expires properties
