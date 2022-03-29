@@ -59,7 +59,6 @@ exports.signup = catchAsync(async (req, res, next) => {
         passwordConfirm,
         role,
         photo,
-        phone,
         address: { country, city, street, zip }
     });
     createAndSendToken(newUser, 201, res);
