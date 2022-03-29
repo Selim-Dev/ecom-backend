@@ -9,7 +9,10 @@ const OrderItem = require('../models/OrderItem');
 const Product = require('../models/Product');
 const orderJoi = require('../validations/orderJoi');
 
-exports.getAll = factory.getAll(Order);
+exports.getAll = factory.getAll(Order, {
+    path: 'user',
+    select: 'name'
+});
 exports.creatOrder = catchAsync(async (req, res, next) => {
     const validateOrder = orderJoi.createOrderJoi(req.body);
     if (validateOrder) {
@@ -20,7 +23,7 @@ exports.creatOrder = catchAsync(async (req, res, next) => {
     //1) Get the total price of the orders
     let totalPrice = 0;
     orderItems.forEach(async (item) => {
-        totalPrice += item.price * 1;
+        totalPrice += item.price * 1 * item.quantity * 1;
     });
     // session (for transactions)
     // // const session = await mongoose.startSession();
@@ -85,10 +88,22 @@ exports.creatOrder = catchAsync(async (req, res, next) => {
     });
 });
 
-exports.getOne = factory.getOne(Order, {
-    path: 'orderItems',
-    select: 'product price'
-});
+exports.getOne = factory.getOne(Order, [
+    {
+        path: 'orderItems',
+        Model: 'OrderItem',
+        populate: {
+            path: 'product',
+            model: 'Product',
+            select: 'name photo description listPrice ratingsAverage '
+        }
+    },
+    {
+        path: 'user',
+        Model: 'User',
+        select: 'name phone'
+    }
+]);
 
 exports.deleteById = catchAsync(async (req, res, next) => {
     res.status(204).json({

@@ -15,8 +15,8 @@ const ProductSchema = new mongoose.Schema({
     photo_id: {
         type: String
     },
-    album: [String],
-    album_id: [String],
+    // album: [String],
+    // album_id: [String],
     category: {
         type: mongoose.Schema.ObjectId,
         ref: 'Category',
@@ -39,7 +39,6 @@ const ProductSchema = new mongoose.Schema({
     },
     sku: {
         type: String
-        // unique: [true, 'product sku must be unique']
     },
     stock: Number,
     ratingsAverage: {

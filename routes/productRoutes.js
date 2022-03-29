@@ -9,8 +9,8 @@ router
     .route('/')
     .post(
         upload.fields([
-            { name: 'photo', maxCount: 1 },
-            { name: 'album', maxCount: 4 }
+            { name: 'photo', maxCount: 1 }
+            // { name: 'album', maxCount: 4 }
         ]),
         authController.protect,
         productController.createProduct
