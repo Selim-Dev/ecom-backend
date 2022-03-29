@@ -17,20 +17,20 @@ exports.createProduct = catchAsync(async (req, res, next) => {
         sku
     } = req.body;
     console.log(req.files.photo[0].path);
-    console.log(req.files.album);
+    // console.log(req.files.album);
     const photo = await cloudinary.uploader.upload(req.files.photo[0].path, {
         upload_preset: 'ecommerce'
     });
     if (!photo) {
         return next(new AppError('Photo Not Uploaded', 400));
     }
-    const album = await Promise.all(
-        req.files.album.map(async (file) => {
-            return cloudinary.uploader.upload(file.path, {
-                upload_preset: 'ecommerce'
-            });
-        })
-    );
+    // const album = await Promise.all(
+    //     req.files.album.map(async (file) => {
+    //         return cloudinary.uploader.upload(file.path, {
+    //             upload_preset: 'ecommerce'
+    //         });
+    //     })
+    // );
     const prod = await Product.create({
         name,
         salePrice,
@@ -42,9 +42,9 @@ exports.createProduct = catchAsync(async (req, res, next) => {
         stock,
         sku,
         photo: photo.secure_url,
-        photo_id: photo.public_id,
-        album: album.map((item) => item.secure_url),
-        album_id: album.map((item) => item.public_id)
+        photo_id: photo.public_id
+        // album: album.map((item) => item.secure_url),
+        // album_id: album.map((item) => item.public_id)
     });
     // console.log(req.body);
     res.status(201).json({
