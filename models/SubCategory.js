@@ -13,6 +13,11 @@ const subCategoriesSchema = new mongoose.Schema({
     cloudinary_id: {
         type: String
     },
+    category: {
+        type: mongoose.Schema.ObjectId,
+        required: [true, 'subcategory should have category id'],
+        ref: 'Category'
+    },
     variants: [{ type: mongoose.Schema.ObjectId, ref: 'Variant', default: [] }],
     brands: [{ type: mongoose.Schema.ObjectId, ref: 'Brand', default: [] }]
 });

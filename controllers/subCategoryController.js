@@ -8,7 +8,9 @@ const ProductReviews = require('../models/ProductReview');
 const subCategoryJoi = require('../validations/subCategoryJoi');
 const cloudinary = require('../utils/cloudinary');
 
-exports.getAll = factory.getAll(SubCategory);
+exports.getAll = factory.getAll(SubCategory, {
+    path: 'category'
+});
 exports.creatSubCategory = catchAsync(async (req, res, next) => {
     const validateSubCat = subCategoryJoi.subcatJoi(req.body);
     if (validateSubCat) {
@@ -30,7 +32,8 @@ exports.creatSubCategory = catchAsync(async (req, res, next) => {
         name,
         photo: response.secure_url,
         cloudinary_id: response.public_id,
-        brands
+        brands,
+        category: categoryId
     });
     if (!subCategory) {
         return next(new AppError('Sub Category not created', 400));
@@ -74,6 +77,7 @@ exports.editById = catchAsync(async (req, res, next) => {
     const data = {
         name: req.body.name || subCategory.name,
         brands: req.body.brands || subCategory.brands,
+        brands: req.body.category || subCategory.category,
         photo: response?.secure_url || subCategory.photo,
         cloudinary_id: response?.public_id || subCategory.cloudinary_id
     };
